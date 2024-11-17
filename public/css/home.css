@@ -1,0 +1,162 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.background-image {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    height: auto;
+    min-width: 100vh;
+    width: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+.transparent-box {
+    border: 2px solid white;
+    display: flex;
+    padding: 20px;
+    margin: 30px;
+    width: 90%;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+.section {
+    flex: 1;
+    
+}
+
+.aifiretechlogo{
+    width: 200px;
+    height: auto;
+    display: block;
+    margin-left: 0;
+    margin-right: auto;
+}
+.title {
+    font-family: sans-serif;
+    letter-spacing: 8px;
+    text-align: center;
+    margin-top: 100px;
+    font-size: 1.5rem;
+    color: black;
+}
+.button {
+    background-color: red;
+    width: 210px;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: block;
+    margin-top: 20px;
+    letter-spacing: 1px;
+}
+
+.button:hover {
+    background-color: darkred;
+}
+
+.menu{
+    margin-top: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.menu-hr {
+    margin-top: 20px;
+    border: none;
+    height: 3px;
+    background-color: darkorange;
+    width: 60%;
+}
+
+.social-media{
+    font-family: sans-serif;
+    letter-spacing: 2px;
+    text-align: center;
+    font-size: 15px;
+    color: black;
+}
+
+.title-hr {
+    border: none;
+    height: 1.5px;
+    background-color: gray;
+}
+
+.dropdown a{
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    
+}
+
+.dropdown .content{
+    display: none;
+    background-color: red;
+    color: white;
+    position: absolute;
+    min-width: 210px;
+    box-shadow: 2px 2px 5px black;
+}
+
+.dropdown:hover .content{
+    display: block;
+}
+
+.dropdown:hover button{
+    background-color: darkred;
+}
+
+.dropdown a:hover{
+    background-color: darkred;
+}
+
+.dropdown{
+    display: inline-block;
+}
+
+.dropdown button{
+    background-color: red;
+    width: 210px;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: block;
+    
+    letter-spacing: 1px;
+}
+
+.social-media-link{
+    display: flex;
+    
+
+}
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
