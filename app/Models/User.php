@@ -17,6 +17,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    
     protected $fillable = [
         'user_id',
         'user_username',
@@ -47,6 +48,18 @@ class User extends Authenticatable
     {
         return [
             'user_password' => 'hashed',
-        ];
+    ];
+    }
+
+    protected $primaryKey = 'user_id';
+
+    public function getAuthPassword()
+    {
+        return $this->user_password; // 指定自定义的密码字段
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return 'user_id'; // 设置自定义的标识字段
     }
 }
