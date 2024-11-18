@@ -18,15 +18,15 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'user_id',
-        'user_username',
-        'user_password',
-        'user_company_name',
-        'user_company_address',
-        'user_person_in_charge',
-        'user_contact',
-        'user_email',
-        'staff_in_charge',
+        'id',
+        'username',
+        'password',
+        'company_name',
+        'company_address',
+        'person_in_charge',
+        'contact',
+        'email',
+        'staff_id_in_charge',
     ];
 
     /**
@@ -35,7 +35,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'user_password',
+        'password',
     ];
 
     /**
@@ -46,7 +46,19 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'user_password' => 'hashed',
+            'password' => 'hashed',
         ];
+    }
+
+    protected $primaryKey = 'id';
+    
+    public function getAuthPassword()
+    {
+        return $this->password;
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return 'username';
     }
 }
