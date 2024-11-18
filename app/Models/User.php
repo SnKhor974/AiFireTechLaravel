@@ -49,17 +49,4 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
-    protected $primaryKey = 'id';
-    
-    public function getAuthPassword()
-    {
-        return $this->password;
-    }
-
-    public function getAuthIdentifierName()
-    {
-        return 'id';
-          
-    }
 }
