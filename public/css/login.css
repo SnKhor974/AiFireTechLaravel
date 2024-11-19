@@ -1,0 +1,153 @@
+body, html{
+    margin: 0;
+    padding: 0;
+    height: auto;
+    font-family: sans-serif;
+}
+.main{
+    width: auto;
+    height: auto;
+    display: flex;
+    margin: 30px;
+    justify-content: center;
+    align-items: center;
+
+}
+.boxouter{
+    border: 2px solid red;
+    width: 60%;
+    height: auto;
+    margin: 30px;
+    border-radius: 10px;
+}
+.box {
+    border: 2px dotted red;
+    display: flex;
+    padding: 20px;
+    margin : 15px;
+    gap: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+}
+
+.login{
+    flex: 1;
+    padding: 20px;
+}
+
+.input-box{
+
+    margin-bottom: 10px;
+}
+
+
+.more {
+    flex: 1;
+    display: block;
+    background-color: orange;
+    text-align: center;
+    justify-content: center;
+    color: white;
+    border-radius: 10px;
+}
+
+.input-box input {
+    background-color: rgba(255, 165, 0, 0.65); 
+    border-radius: 10px;
+    border: none;
+    height: 50px;
+    line-height: 50px;
+    justify-content: center;
+    width: 100%;
+    display: block;
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    background-size: 30px 30px;
+    padding-left: 50px;
+    color: white;
+    font-size: 1rem;
+}
+
+.input-box input::placeholder {
+    font-size: 1rem;
+    color: white;
+}
+
+.backbutton{
+    font-size: 1rem;
+    text-decoration: none;
+    color: black;
+    padding: 10px;
+}
+.backbutton:hover{
+    text-decoration: underline;
+}
+
+.loginbutton{
+    background-color: orange;
+    border-radius: 10px;
+    font-size: 1rem;
+    padding: 10px;
+    border: none;
+    height: auto;
+    width: auto;
+    color: white;
+}
+
+.loginbutton:hover{
+    background-color: darkorange;
+    
+}
+
+.more img{
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+}
+
+.options{
+    justify-content: center; 
+    text-align: left;
+    font-size: 1.1rem;
+    padding: 10px;
+}
+
+.options a{
+    text-decoration: none;
+    color: white;
+}
+
+.options:hover{
+    text-decoration: underline;
+}
+
+.chat{
+    display: flex;
+}
+
+.chat-text{
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    font-size: 0.8rem;
+}
+
+.chat-icon{
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    display:flex;
+}
+
+.action-button{
+    display: flex;
+    justify-content: space-between;
+}
+
+.copyright{
+    color: black; 
+    text-align: center;
+    padding: 10px;
+    width: 100%;
+    font-size: 1rem;
+}

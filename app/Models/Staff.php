@@ -12,6 +12,8 @@ class Staff extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    protected $guard = 'staff';
+
     /**
      * The attributes that are mass assignable.
      *

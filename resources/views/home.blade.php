@@ -27,9 +27,9 @@
                         <div class="dropdown">
                             <button class=""><b>Log In</b></button>
                             <div class="content">
-                                <a href="/admin/login" style="font-family: sans-serif;"><b>Admin</b></a>
-                                <a href="/staff/login" style="font-family: sans-serif;"><b>Staff</b></a>
-                                <a href="/user/login" style="font-family: sans-serif;"><b>User</b></a>
+                                <a href="{{route('admin-login-page')}}" style="font-family: sans-serif;"><b>Admin</b></a>
+                                <a href="{{route('staff-login-page')}}" style="font-family: sans-serif;"><b>Staff</b></a>
+                                <a href="{{route('users-login-page')}}" style="font-family: sans-serif;"><b>User</b></a>
                             </div>
                         </div>
                 
