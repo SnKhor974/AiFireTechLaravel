@@ -14,5 +14,8 @@ Route::prefix('users')->middleware('guest:users')->group(function () {
 
 Route::prefix('users')->middleware('auth:users')->group(function () {
 
-    Route::post('logout', [UsersAuthenticatedSessionController::class, 'destroy'])->name('logout');
+    Route::get('/users-page/{username}', function ($username) {
+        return view('users.users_page',['username' => $username]);
+    })->name('users-page');
+    Route::post('logout', [UsersAuthenticatedSessionController::class, 'destroy'])->name('users-logout');
 });

@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-class LoginRequest extends FormRequest
+use function Laravel\Prompts\error;
+
+class AdminLoginRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -41,11 +43,13 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
+        if (! Auth::guard('admin')->attempt($this->only('username', 'password'))) {
             RateLimiter::hit($this->throttleKey());
 
+            session()->flash('admin_login_error', 'Invalid login.');
+
             throw ValidationException::withMessages([
-                'username' => trans('auth.failed'),
+                'username' => 'Invalid login.',
             ]);
         }
 

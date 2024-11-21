@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Staff\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\StaffLoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,13 +23,13 @@ class StaffAuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(StaffLoginRequest $request): RedirectResponse
     {
         $request->authenticate();
 
         $request->session()->regenerate();
-
-        return redirect()->intended(route('dashboard', absolute: false));
+        $username = Auth::guard('staff')->user()->username;
+        return redirect()->intended(route('staff-page', ['username' => $username]));
     }
 
     /**
@@ -37,7 +37,7 @@ class StaffAuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();
+        Auth::guard('staff')->logout();
 
         $request->session()->invalidate();
 

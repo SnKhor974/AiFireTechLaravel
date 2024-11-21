@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>AiFireTechnology</title>
+        <title>Login as Admin</title>
         <link rel="icon" type="image/png" href="aifiretechlogo.png">
-        <link rel="stylesheet" type="text/css" href="css/login.css">
+        <link rel="stylesheet" type="text/css" href="{{ asset('css/login.css') }}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="UTF-8">
     </head>
@@ -11,20 +11,30 @@
     <body>
         <div class="mainbody">
             <div class="main">
-                <img src="img/aifiretechlogo.png" alt="AiFireTechnology"style="width: 300px; height: 300px;">
+                <img src="{{ asset('img/aifiretechlogo.png') }}" alt="AiFireTechnology"style="width: 300px; height: 300px;">
 
                 <div class="boxouter">
                     <div class="box">
                         <div class="login">
-                            <form method="POST" autocomplete="off" action="{{ route('login') }}">
+                            <form method="post" autocomplete="off" action="{{ route( 'admin-login') }}">
+                                @csrf
                                 <h1 style="font-size: 2rem;">Login as Admin:</h1>
                      
-                                <div class="input-box" >
-                                    <input type="text" name="username" style="background-image: url('img/profileicon.png');" id="username" placeholder="Username" required>
+                                @if (session('admin_login_error'))
+                                    <label style="color: red;">{{ session('admin_login_error') }}</label>
+                                @endif
+
+                                <div class="input-box" style="position: relative;">
+                                    <input type="text" name="username" id="username" placeholder="Username" required>
+                                       
+                                    <img src="{{ asset('img/profileicon.png') }}" alt="Profile Icon">
                                 </div>
 
-                                <div class="input-box">
-                                    <input type="password" name="password" style="background-image: url('img/passwordicon.png');" id="password" placeholder="Password" required>
+                                <div class="input-box" style="position: relative;">
+                                    <input type="password" name="password" id="password" placeholder="Password" required>
+
+                                    <img src="{{ asset('img/passwordicon.png') }}" alt="Password Icon">
+                                        
                                 </div>
 
                                 <div class="action-button">
@@ -40,22 +50,22 @@
                                 <h2>Need Help?</h2>
                             </div>
                             <div class="options">
-                                <img src="img/questionmark.png"><a href="#">Forgot Username/Password?</a>
+                                <img src="{{asset('img/questionmark.png')}}"><a href="#">Forgot Username/Password?</a>
                             </div>
                             <div class="options">
-                                <img src="img/questionmark.png"><a href="#">Reset Account</a>
+                                <img src="{{asset('img/questionmark.png')}}"><a href="#">Reset Account</a>
                             </div>
                             <div class="options">
-                                <img src="img/questionmark.png"><a href="#">Other Login Problems</a>
+                                <img src="{{asset('img/questionmark.png')}}"><a href="#">Other Login Problems</a>
                             </div>
                             <div class ="chat">
-                                    <div class="chat-text">
-                                        <h2>Contact us</h2>
-                                        <h2>016-551 9831</h2>
-                                    </div>
-                                    <div class="chat-icon">
-                                        <img src="img/chaticon.png" style="width: 80px; height: 80px;">
-                                    </div>
+                                <div class="chat-text">
+                                    <h2>Contact us</h2>
+                                    <h2>016-551 9831</h2>
+                                </div>
+                                <div class="chat-icon">
+                                    <img src="{{asset('img/chaticon.png')}}" style="width: 80px; height: 80px;">
+                                </div>
                             </div>
                         </div>
                     </div>

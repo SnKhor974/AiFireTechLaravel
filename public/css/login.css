@@ -58,14 +58,20 @@ body, html{
     height: 50px;
     line-height: 50px;
     justify-content: center;
-    width: 100%;
-    display: block;
-    background-repeat: no-repeat;
-    background-position: 10px center;
-    background-size: 30px 30px;
+    width: 90%;
+    display: block; 
     padding-left: 50px;
     color: white;
     font-size: 1rem;
+}
+
+.input-box img{
+    position: absolute;
+    top: 50%; 
+    left: 10px; 
+    transform: translateY(-50%); 
+    height: 30px; 
+    width: 30px;
 }
 
 .input-box input::placeholder {

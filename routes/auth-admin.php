@@ -15,5 +15,9 @@ Route::prefix('admin')->middleware('guest:admin')->group(function () {
 
 Route::prefix('admin')->middleware('auth:admin')->group(function () {
 
-    Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('logout');
+    Route::get('/admin-page/{username}', function ($username) {
+        return view('admin.admin_page', ['username' => $username]);
+    })->name('admin-page');
+
+    Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('admin-logout');
 });

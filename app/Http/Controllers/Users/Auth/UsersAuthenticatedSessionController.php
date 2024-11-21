@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Users\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\UsersLoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,13 +23,13 @@ class UsersAuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(UsersLoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
+        
         $request->session()->regenerate();
-
-        return redirect()->intended(route('dashboard', absolute: false));
+        $username = Auth::guard('users')->user()->username;
+        return redirect()->intended(route('users-page', ['username' => $username]));
     }
 
     /**
@@ -37,7 +37,7 @@ class UsersAuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();
+        Auth::guard('users')->logout();
 
         $request->session()->invalidate();
 
