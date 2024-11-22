@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Users\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\UsersLoginRequest;
+use App\Models\FE;
+use App\Models\Users;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,8 +30,23 @@ class UsersAuthenticatedSessionController extends Controller
         $request->authenticate();
         
         $request->session()->regenerate();
+
+        return redirect()->intended(route('users-page'));
+    }
+
+    /**
+     * Proceed into main page and pass in data after authentication.
+     */
+    public function proceed(): View
+    {
+        //get the username of the authenticated user
         $username = Auth::guard('users')->user()->username;
-        return redirect()->intended(route('users-page', ['username' => $username]));
+        //get id of starr
+        $user_id = Users::where('username', $username)->first()->id;
+        //get all users that the staff is in charge of
+        $user_details = Users::where('id', $user_id)->first();
+        $fe_list = FE::where('fe_user_id', $user_id)->get();
+        return view('users.users_page', ['username' => $username, 'fe_list' => $fe_list, 'user_details' => $user_details]);
     }
 
     /**

@@ -46,6 +46,7 @@ class AdminLoginRequest extends FormRequest
         if (! Auth::guard('admin')->attempt($this->only('username', 'password'))) {
             RateLimiter::hit($this->throttleKey());
 
+            //send error message to login page if invalid login
             session()->flash('admin_login_error', 'Invalid login.');
 
             throw ValidationException::withMessages([
