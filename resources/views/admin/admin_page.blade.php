@@ -19,27 +19,26 @@
 
     <label style="font-size:30px">Check user details: </label>
     <div>
-        <form method="post" autocomplete="off">
-            
+        <form method="post" autocomplete="off" action="{{ route('admin-view-user-by-id') }}">
+            @csrf
             <label>Search by ID:</label>
-
-           
-            <input type="text" name="search" id="search" placeholder="Enter ID">
-            
+            @if (session('user_id_invalid'))
+                <label style="color: red; font-size: 1.5rem;">{{ session('user_id_invalid') }}</label>
+            @endif
+            <input type="text" name="search_id" id="search_id" placeholder="Enter ID">
             <button>Search</button>
-               
-
         </form>
     
-        <form method="post" autocomplete="off">
-            
+        <form method="post" autocomplete="off" action="{{ route('admin-view-user-by-name') }}">
+            @csrf
             <label>Search by Name:</label>
-            
+            @if (session('user_name_invalid'))
+                <label style="color: red; font-size: 1.5rem">{{ session('user_name_invalid') }}</label>
+            @endif
             <div class="autocomplete-wrapper" id="autocomplete-wrapper">
                 <input type="text" name="search_name" id="search_name" class="form-control" placeholder="Enter Name">
             </div>
-            <button>Search</button>
-            
+            <button>Search</button> 
         </form>
     </div>
 
@@ -116,6 +115,5 @@ function onNameButtonClick(e){
 
     removeAutocompleteDropdown();
 }
-
 
 </script>

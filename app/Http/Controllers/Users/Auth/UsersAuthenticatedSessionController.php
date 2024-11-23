@@ -41,10 +41,10 @@ class UsersAuthenticatedSessionController extends Controller
     {
         //get the username of the authenticated user
         $username = Auth::guard('users')->user()->username;
-        //get id of starr
+        //get id of user
         $user_id = Users::where('username', $username)->first()->id;
-        //get all users that the staff is in charge of
-        $user_details = Users::where('id', $user_id)->first();
+        //get all user details and fe list
+        $user_details = Users::find($user_id);
         $fe_list = FE::where('fe_user_id', $user_id)->get();
         return view('users.users_page', ['username' => $username, 'fe_list' => $fe_list, 'user_details' => $user_details]);
     }
