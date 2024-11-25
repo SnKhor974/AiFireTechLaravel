@@ -20,5 +20,7 @@ Route::prefix('staff')->middleware('auth:staff')->group(function () {
 
     Route::post('view-user-by-name', [StaffAuthenticatedSessionController::class, 'viewUserByName'])->name('staff-view-user-by-name');
 
+    Route::get('generate-report', [StaffAuthenticatedSessionController::class, 'generateReport'])->name('staff-generate-report');
+
     Route::post('logout', [StaffAuthenticatedSessionController::class, 'destroy'])->name('staff-logout');
 });

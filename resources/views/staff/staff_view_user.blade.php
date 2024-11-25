@@ -10,6 +10,12 @@
     <img src="{{ asset('img/Screenshot 2024-07-15 203702.png') }}" alt="AiFireTechnology" width=100%>
     <h1>Viewing - {{$user_details->username}}</h1>
     <a href="{{ route('staff-page') }}">Back</a>
+
+    <form action="{{ route('staff-generate-report') }}" method="GET">
+        <button type="submit" >Generate Report</button>
+        <input type="hidden" name="id" value="{{$user_details->id}}">
+    </form>
+
     <table>
         <tr>
             <td>Company Name:</td>

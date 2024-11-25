@@ -22,5 +22,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 
     Route::post('view-user-by-name', [AdminAuthenticatedSessionController::class, 'viewUserByName'])->name('admin-view-user-by-name');
 
+    Route::get('generate-report', [AdminAuthenticatedSessionController::class, 'generateReport'])->name('admin-generate-report');
+
     Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('admin-logout');
 });

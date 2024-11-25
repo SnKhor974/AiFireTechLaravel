@@ -12,6 +12,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Response;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+
 class AdminAuthenticatedSessionController extends Controller
 {
     /**
@@ -109,5 +116,76 @@ class AdminAuthenticatedSessionController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    public function generateReport(Request $request){
+        
+        $user_details = Users::find($request->id);
+
+        $fe_list = FE::where('fe_user_id', $request->id)->get();
+
+        $reportID = strval(rand(100000, 999999));
+        $reportCurrentTime = date("Y-m-d");
+        $reportName = strval($user_details->username);
+
+
+        $sourceFile = public_path('report/FE List Report Template.xlsx');
+        $fileName = "FE-Report-{$reportName}-{$reportCurrentTime}-{$reportID}.xlsx";
+        $destinationFile = public_path("report/{$fileName}");
+
+        copy($sourceFile, $destinationFile);
+
+
+        $spreadsheet = IOFactory::load($destinationFile);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $drawing = new Drawing();
+        $drawing->setName('Profile');
+        $drawing->setPath('img/Screenshot 2024-07-15 203702.png');
+        $drawing->setHeight(10 * 28.3465);
+        $drawing->setWidth(20.6 * 28.3465);
+        $drawing->setCoordinates('A1');
+        $drawing->setWorksheet($sheet);
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($destinationFile);
+        
+        $sheet->setCellValue('C10', $user_details->company_name);
+        $sheet->setCellValue('C11', $user_details->company_address);
+        $sheet->setCellValue('C12', $user_details->person_in_charge);
+        $sheet->setCellValue('C13', $user_details->contact);
+        $sheet->setCellValue('C14', $user_details->email);
+                
+        $counter = 1;
+        $excelrow = 17;
+
+        foreach ($fe_list as $reportrow){
+            
+            $sheet->setCellValue('A' . $excelrow, $counter);
+            $sheet->setCellValue('B' . $excelrow, $reportrow->fe_serial_number);
+            $sheet->setCellValue('C' . $excelrow, $reportrow->fe_type);
+            $sheet->setCellValue('D' . $excelrow, $reportrow->fe_brand);
+            $sheet->setCellValue('E' . $excelrow, $reportrow->fe_man_date);
+            $sheet->setCellValue('F' . $excelrow, $reportrow->fe_exp_date);
+
+            $sheet->getStyle('A' . $excelrow . ':F' . $excelrow)->applyFromArray([
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['argb' => 'FF000000'],
+                    ],
+                ],
+            ]);
+
+            $excelrow++;
+            $counter++;
+        
+        }
+        
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($destinationFile);
+
+        return response()->download($destinationFile, $fileName)->deleteFileAfterSend(true);
+
     }
 }
