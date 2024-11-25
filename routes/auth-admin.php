@@ -24,5 +24,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 
     Route::get('generate-report', [AdminAuthenticatedSessionController::class, 'generateReport'])->name('admin-generate-report');
 
+    Route::post('register', [AdminAuthenticatedSessionController::class, 'storeReg'])->name('admin-store-reg');
+
     Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('admin-logout');
 });

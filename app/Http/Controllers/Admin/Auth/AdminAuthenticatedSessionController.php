@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\AdminLoginRequest;
+use App\Models\Admin;
 use App\Models\FE;
 use App\Models\Staff;
 use App\Models\Users;
@@ -102,6 +103,53 @@ class AdminAuthenticatedSessionController extends Controller
         $fe_list = FE::where('fe_user_id', $user_details->id)->get();
 
         return view('admin.admin_view_user', ['user_details' => $user_details, 'fe_list' => $fe_list, 'staff_name' => $staff_name]);
+    }
+
+    /**
+     * Register new account.
+     */
+    public function storeReg(Request $request): RedirectResponse
+    {
+        $data = $request->all();
+        // dd($data);
+
+        if($data['role'] == 'admin'){
+            $user = Admin::create([
+                'username' => $data['username'],
+                'password' => $data['password'],
+            ]);
+
+            $user->save();
+        }
+        
+        if($data['role'] == 'staff'){
+            $user = Staff::create([
+                'username' => $data['username'],
+                'password' => $data['password'],
+            ]);
+    
+            $user->save();
+        }
+        if($data['role'] == 'user'){
+            $user = Users::create([
+                'username' => $data['username'],
+                'password' => $data['password'],
+                'company_name' => $data['company_name'],
+                'company_address' => $data['company_address'],
+                'person_in_charge' => $data['person_in_charge'],
+                'contact' => $data['contact'],
+                'email' => $data['email'],
+                'area' => $data['area'],
+                'staff_id_in_charge' => 0
+            ]);
+    
+            $user->save();
+        }
+        // dd($request['username']);
+        // $roles = Staff::all();
+        // dd($roles);
+
+        return redirect()->intended(route('admin-page'))->with('success', 'Registration Successful');
     }
 
     /**

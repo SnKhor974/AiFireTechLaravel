@@ -110,6 +110,34 @@ class StaffAuthenticatedSessionController extends Controller
     }
 
     /**
+     * Register new user.
+     */
+    public function storeReg(Request $request): RedirectResponse
+    {
+        $data = $request->all();
+        // dd($data);
+        $user = Users::create([
+            'username' => $data['username'],
+            'password' => $data['password'],
+            'company_name' => $data['company_name'],
+            'company_address' => $data['company_address'],
+            'person_in_charge' => $data['person_in_charge'],
+            'contact' => $data['contact'],
+            'email' => $data['email'],
+            'area' => $data['area'],
+            'staff_id_in_charge' => Staff::where('username', Auth::guard('staff')->user()->username)->first()->id,
+        ]);
+
+        $user->save();
+        
+        // dd($request['username']);
+        // $roles = Staff::all();
+        // dd($roles);
+
+        return redirect()->intended(route('staff-page'))->with('success', 'Registration Successful');
+    }
+
+    /**
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): RedirectResponse

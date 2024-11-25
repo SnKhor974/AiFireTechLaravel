@@ -3,68 +3,171 @@
 <head>
     <title>Admin</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/sakura.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/autocomplete.css') }}">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
 </head>
 <body>
-    <img src="{{ asset('img/Screenshot 2024-07-15 203702.png') }}" alt="AiFireTechnology" width=100%>
-    <h1>Logged in as Admin - {{$username}}</h1>
-    <a href="">Register new account</a>
-    <form id="admin-logout-form" action="{{ route('admin-logout') }}" method="POST" style="display: none;">
-        @csrf
-    </form>
-    <p><a href="#" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">Log out</a></p>
-
-    <label style="font-size:30px">Check user details: </label>
-    <div>
-        <form method="post" autocomplete="off" action="{{ route('admin-view-user-by-id') }}">
-            @csrf
-            <label>Search by ID:</label>
-            @if (session('user_id_invalid'))
-                <label style="color: red; font-size: 1.5rem;">{{ session('user_id_invalid') }}</label>
-            @endif
-            <input type="text" name="search_id" id="search_id" placeholder="Enter ID">
-            <button>Search</button>
-        </form>
-    
-        <form method="post" autocomplete="off" action="{{ route('admin-view-user-by-name') }}">
-            @csrf
-            <label>Search by Name:</label>
-            @if (session('user_name_invalid'))
-                <label style="color: red; font-size: 1.5rem">{{ session('user_name_invalid') }}</label>
-            @endif
-            <div class="autocomplete-wrapper" id="autocomplete-wrapper">
-                <input type="text" name="search_name" id="search_name" class="form-control" placeholder="Enter Name">
+    <div class="container" >
+        @if (session('success'))
+            <div id="success-alert" class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <button>Search</button> 
+
+            <script>
+                // Automatically dismiss the alert after 5 seconds
+                setTimeout(function() {
+                    $('#success-alert').alert('close');
+                }, 5000); // 5000 ms = 5 seconds
+            </script>
+        @endif
+        <img src="{{ asset('img/Screenshot 2024-07-15 203702.png') }}" alt="AiFireTechnology" width=100%>
+        <h1>Logged in as Admin - {{$username}}</h1>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#regModal">
+            Register new account
+        </button>
+        <form id="admin-logout-form" action="{{ route('admin-logout') }}" method="POST" style="display: none;">
+            @csrf
         </form>
-    </div>
+        <p><a href="#" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">Log out</a></p>
 
-    <table>
-        <tr>
-            <th>User ID</th>
-            <th>Username</th>
-        </tr>
+        <label style="font-size:30px">Check user details: </label>
+        <div>
+            <form method="post" autocomplete="off" action="{{ route('admin-view-user-by-id') }}">
+                @csrf
+                <label>Search by ID:</label>
+                @if (session('user_id_invalid'))
+                    <label style="color: red; font-size: 1.5rem;">{{ session('user_id_invalid') }}</label>
+                @endif
+                <input type="text" name="search_id" id="search_id" placeholder="Enter ID">
+                <button>Search</button>
+            </form>
+        
+            <form method="post" autocomplete="off" action="{{ route('admin-view-user-by-name') }}">
+                @csrf
+                <label>Search by Name:</label>
+                @if (session('user_name_invalid'))
+                    <label style="color: red; font-size: 1.5rem">{{ session('user_name_invalid') }}</label>
+                @endif
+                <div class="autocomplete-wrapper" id="autocomplete-wrapper">
+                    <input type="text" name="search_name" id="search_name" class="form-control" placeholder="Enter Name">
+                </div>
+                <button>Search</button> 
+            </form>
+        </div>
 
-        @foreach($user_list as $user)
+        <table>
             <tr>
-                <td>{{$user->id}}</td>
-                <td>{{$user->username}}</td>
+                <th>User ID</th>
+                <th>Username</th>
             </tr>
-        @endforeach
-    </table>
+
+            @foreach($user_list as $user)
+                <tr>
+                    <td>{{$user->id}}</td>
+                    <td>{{$user->username}}</td>
+                </tr>
+            @endforeach
+        </table>
+    </div>
+    
     
 </body>
 </html>
-<script type="text/javascript">
 
+<!-- Modal Structure -->
+<div class="modal fade" id="regModal" tabindex="-1" role="dialog" aria-labelledby="regModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="regModalLabel">Account Registration</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Form Inside the Modal -->
+        <form action="{{ route('admin-store-reg') }}" method="POST">
+        @csrf
+            <div class="form-group">
+                <label for="role">Role</label>
+                <select class="form-control" onchange="toggleUserDiv()" id="role" name="role" required>
+                    <option value="">Select a Role</option>
+                    <option value="admin">Admin</option>
+                    <option value="staff">Staff</option>
+                    <option value="user">User</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            
+            <!-- <div class="form-group">
+            <label for="confirm_password">Confirm Password</label>
+            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+            </div> -->
+            <div id="userDiv" style="display: none;">
+                <div class="form-group">
+                    <label for="company_name">Company name</label>
+                    <input type="text" class="form-control" id="company_name" name="company_name">
+                </div>
+                <div class="form-group">
+                    <label for="company_address">Company address</label>
+                    <input type="text" class="form-control" id="company_address" name="company_address">
+                </div>
+                <div class="form-group">
+                    <label for="person_in_charge">Person in charge</label>
+                    <input type="text" class="form-control" id="person_in_charge" name="person_in_charge">
+                </div>
+                <div class="form-group">
+                    <label for="contact">Contact</label>
+                    <input type="text" class="form-control" id="contact" name="contact">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="text" class="form-control" id="email" name="email">
+                </div>
+                <div class="form-group">
+                    <label for="area">Area</label>
+                    <input type="text" class="form-control" id="area" name="area">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script type="text/javascript">
 const inputE1 = document.querySelector('#search_name');
 
 inputE1.addEventListener("input", onInputChange);
 
 const profileNames = <?php echo $name_list; ?>;
+
+function toggleUserDiv() {
+    const role = document.getElementById('role').value;
+    const userDiv = document.getElementById('userDiv');
+
+    if (role === 'user') {
+        userDiv.style.display = 'block'; // Show the div
+    } else {
+        userDiv.style.display = 'none'; // Hide the div
+    }
+}
 
 function onInputChange(){
     removeAutocompleteDropdown();
