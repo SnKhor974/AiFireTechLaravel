@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/autocomplete.css') }}">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/sakura.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
 </head>
@@ -27,7 +28,7 @@
         @endif
         <img src="{{ asset('img/Screenshot 2024-07-15 203702.png') }}" alt="AiFireTechnology" width=100%>
         <h1>Logged in as Admin - {{$username}}</h1>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#regModal">
+        <button type="button" data-toggle="modal" data-target="#regModal">
             Register new account
         </button>
         <form id="admin-logout-form" action="{{ route('admin-logout') }}" method="POST" style="display: none;">
@@ -143,7 +144,7 @@
                     <input type="text" class="form-control" id="area" name="area">
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Register</button>
+            <button type="submit">Register</button>
         </form>
       </div>
     </div>

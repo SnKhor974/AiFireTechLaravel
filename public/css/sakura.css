@@ -162,7 +162,7 @@ td, th {
 }
 
 /* Buttons, forms and input */
-input, textarea {
+input, textarea{
   border: 1px solid #4a4a4a;
 }
 input:focus, textarea:focus {
@@ -173,7 +173,7 @@ textarea {
   width: 100%;
 }
 
-.button, button, input[type=submit], input[type=reset], input[type=button], input[type=file]::file-selector-button {
+.button, button, input[type=submit], input[type=reset], input[type=button], input[type=file]::file-selector-button, .registerbtn{
   display: inline-block;
   padding: 5px 10px;
   text-align: center;
@@ -200,18 +200,22 @@ textarea {
   outline-width: 2px;
 }
 
-textarea, select, input {
+textarea, select, input, .autocomplete-wrapper input{
   color: #4a4a4a;
+  height: 40px;
+  width: 300px;
   padding: 6px 10px; /* The 6px vertically centers text on FF, ignored by Webkit */
-  margin-bottom: 10px;
   background-color: #f1f1f1;
   border: 1px solid #f1f1f1;
   box-shadow: none;
   box-sizing: border-box;
+  font-size: 1.6rem;
 }
-textarea:focus, select:focus, input:focus {
+textarea:focus, select:focus, input:focus, .autocomplete-wrapper input:focus {
   border: 1px solid black;
+  background-color: white;
   outline: 0;
+  box-shadow: none;
 }
 
 input[type=checkbox]:focus {
