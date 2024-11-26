@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Admin</title>
+    <link rel="icon" type="image/png" href="{{ asset('img/aifiretechlogo.png')}}">
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/autocomplete.css') }}">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">

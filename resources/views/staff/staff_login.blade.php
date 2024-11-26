@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>Login as Staff</title>
-        <link rel="icon" type="image/png" href="aifiretechlogo.png">
+        <link rel="icon" type="image/png" href="{{ asset('img/aifiretechlogo.png')}}">
         <link rel="stylesheet" type="text/css" href="{{ asset('css/login.css') }}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="UTF-8">
