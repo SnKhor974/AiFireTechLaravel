@@ -8,6 +8,7 @@ use App\Models\Admin;
 use App\Models\FE;
 use App\Models\Staff;
 use App\Models\Users;
+use App\Models\Areas;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -56,7 +57,10 @@ class AdminAuthenticatedSessionController extends Controller
         //get name list
         $name_list = json_encode(Users::pluck('username')->toArray());
 
-        return view('admin.admin_page', ['username' => $username, 'user_list' => $user_list, 'name_list' => $name_list]);
+        //get area list
+        $area_list = json_encode(Areas::pluck('area_name')->toArray());
+
+        return view('admin.admin_page', ['username' => $username, 'user_list' => $user_list, 'name_list' => $name_list, 'area_list' => $area_list]);
     }
 
     /**

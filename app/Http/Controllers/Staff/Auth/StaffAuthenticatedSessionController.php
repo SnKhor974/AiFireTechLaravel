@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\StaffLoginRequest;
 use App\Models\FE;
 use App\Models\Staff;
 use App\Models\Users;
+use App\Models\Areas;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -57,7 +58,10 @@ class StaffAuthenticatedSessionController extends Controller
         //get name list
         $name_list = json_encode(Users::where('staff_id_in_charge', $staff_id)->pluck('username')->toArray());
 
-        return view('staff.staff_page', ['username' => $username, 'user_list' => $user_list, 'name_list' => $name_list]);
+        //get area list
+        $area_list = json_encode(Areas::pluck('area_name')->toArray());
+
+        return view('staff.staff_page', ['username' => $username, 'user_list' => $user_list, 'name_list' => $name_list, 'area_list' => $area_list]);
     }
 
     /**

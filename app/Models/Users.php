@@ -29,6 +29,7 @@ class Users extends Authenticatable
         'contact',
         'email',
         'staff_id_in_charge',
+        'area'
     ];
 
     /**

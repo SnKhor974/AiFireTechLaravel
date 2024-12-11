@@ -68,12 +68,14 @@
             <tr>
                 <th>User ID</th>
                 <th>Username</th>
+                <th>Area</th>
             </tr>
 
             @foreach($user_list as $user)
                 <tr>
                     <td>{{$user->id}}</td>
                     <td>{{$user->username}}</td>
+                    <td>{{$user->area}}</td>
                 </tr>
             @endforeach
         </table>
@@ -96,36 +98,38 @@
         <form action="{{ route('staff-store-reg') }}" method="POST">
         @csrf
             <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="username" required>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
             </div>
             <div class="form-group">
-                    <label for="company_name">Company name</label>
-                    <input type="text" class="form-control" id="company_name" name="company_name">
+                    <label for="company_name">Company name:</label>
+                    <input type="text" id="company_name" name="company_name">
                 </div>
                 <div class="form-group">
-                    <label for="company_address">Company address</label>
-                    <input type="text" class="form-control" id="company_address" name="company_address">
+                    <label for="company_address">Company address:</label>
+                    <input type="text" id="company_address" name="company_address">
                 </div>
                 <div class="form-group">
-                    <label for="person_in_charge">Person in charge</label>
-                    <input type="text" class="form-control" id="person_in_charge" name="person_in_charge">
+                    <label for="person_in_charge">Person in charge:</label>
+                    <input type="text" id="person_in_charge" name="person_in_charge">
                 </div>
                 <div class="form-group">
-                    <label for="contact">Contact</label>
-                    <input type="text" class="form-control" id="contact" name="contact">
+                    <label for="contact">Contact:</label>
+                    <input type="text" id="contact" name="contact">
                 </div>
                 <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="text" class="form-control" id="email" name="email">
+                    <label for="email">Email:</label>
+                    <input type="text" id="email" name="email">
                 </div>
                 <div class="form-group">
-                    <label for="area">Area</label>
-                    <input type="text" class="form-control" id="area" name="area">
+                    <label for="search_area">Area:</label>
+                        <div class="autocomplete-wrapper" id="autocomplete-wrapper">
+                            <input type="text" name="search_area" id="search_area">
+                        </div>
                 </div>
             <button type="submit">Register</button>
         </form>
@@ -138,60 +142,65 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-const inputE1 = document.querySelector('#search_name');
-
-inputE1.addEventListener("input", onInputChange);
 
 const profileNames = <?php echo $name_list; ?>;
+const areaNames = <?php echo $area_list; ?>;
 
-function onInputChange(){
-    removeAutocompleteDropdown();
+setupAutocomplete("#search_name", profileNames);
+setupAutocomplete("#search_area", areaNames);
 
-    const value = inputE1.value;  
+function setupAutocomplete(inputSelector, dataArray) {
+    const inputE1 = document.querySelector(inputSelector);
 
-    if (value.length === 0) return;
-
-    const filteredNames = [];
-
-    profileNames.forEach((name)=>{
-        if (name.substr(0,value.length).toLowerCase() === value.toLowerCase())
-            filteredNames.push(name);
+    inputE1.addEventListener("input", function() {
+        onInputChange(inputE1, dataArray);
     });
 
-    createAutocompleteDropdown(filteredNames);
+    function onInputChange(inputE1, dataArray) {
+        removeAutocompleteDropdown(inputE1);
 
+        const value = inputE1.value;
+
+        if (value.length === 0) return;
+
+        const filteredNames = dataArray.filter(name => 
+            name.substr(0, value.length).toLowerCase() === value.toLowerCase()
+        );
+
+        createAutocompleteDropdown(filteredNames, inputE1);
+    }
+
+    function createAutocompleteDropdown(list, inputE1) {
+        const listE1 = document.createElement("ul");
+        listE1.className = "autocomplete-list";
+        listE1.id = "autocomplete-list";
+
+        list.forEach(name => {
+            const listItem = document.createElement("li");
+            const nameButton = document.createElement("button");
+            nameButton.innerHTML = name;
+            nameButton.addEventListener("click", function(e) {
+                onNameButtonClick(e, inputE1);
+            });
+            listItem.appendChild(nameButton);
+
+            listE1.appendChild(listItem);
+        });
+
+        inputE1.parentNode.appendChild(listE1);
+    }
+
+    function removeAutocompleteDropdown(inputE1) {
+        const listE1 = inputE1.parentNode.querySelector(".autocomplete-list");
+        if (listE1) listE1.remove();
+    }
+
+    function onNameButtonClick(e, inputE1) {
+        e.preventDefault();
+        const buttonE1 = e.target;
+        inputE1.value = buttonE1.innerHTML;
+
+        removeAutocompleteDropdown(inputE1);
+    }
 }
-
-function createAutocompleteDropdown(list){
-    const listE1 = document.createElement("ul");
-    listE1.className = "autocomplete-list";
-    listE1.id = "autocomplete-list";
-
-    list.forEach((names)=>{
-        const listItem = document.createElement("li");
-        const nameButton = document.createElement("button");
-        nameButton.innerHTML = names;
-        nameButton.addEventListener("click", onNameButtonClick);
-        listItem.appendChild(nameButton);
-
-        listE1.appendChild(listItem);
-    });
-
-    document.querySelector("#autocomplete-wrapper").appendChild(listE1);
-}
-
-function removeAutocompleteDropdown(){
-    const listE1 = document.querySelector("#autocomplete-list");
-    console.log(listE1);
-    if(listE1) listE1.remove();
-}
-
-function onNameButtonClick(e){
-    e.preventDefault();
-    const buttonE1 = e.target;
-    inputE1.value = buttonE1.innerHTML;
-
-    removeAutocompleteDropdown();
-}
-
 </script>
