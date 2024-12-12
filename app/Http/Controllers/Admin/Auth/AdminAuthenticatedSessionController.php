@@ -203,9 +203,7 @@ class AdminAuthenticatedSessionController extends Controller
         ]);
         $fe->save();
 
-        
-
-        return view('redirect', ['fe_user_id' => $fe_user_id]);
+        return view('admin.admin_redirect', ['fe_user_id' => $fe_user_id]);
     }
 
     /**

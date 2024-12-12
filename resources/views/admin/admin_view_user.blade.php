@@ -9,21 +9,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-    @if (session('success'))
-            <div id="success-alert" class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-
-            <script>
-                // Automatically dismiss the alert after 5 seconds
-                setTimeout(function() {
-                    $('#success-alert').alert('close');
-                }, 5000); // 5000 ms = 5 seconds
-            </script>
-        @endif
     <img src="{{ asset('img/Screenshot 2024-07-15 203702.png') }}" alt="AiFireTechnology" width=100%>
     <h1>Viewing - {{$user_details->username}}</h1>
     <a href="{{ route('admin-page') }}">Back</a>
@@ -57,12 +42,10 @@
         </tr>
     </table>
 
-    
     <button type="button" data-toggle="modal" data-target="#addModal">
         Add Fire Extinguisher
     </button>
     
-
     <table class="fe-table">
         <tr>
             <th>No.</th>

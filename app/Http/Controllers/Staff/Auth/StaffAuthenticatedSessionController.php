@@ -8,6 +8,7 @@ use App\Models\FE;
 use App\Models\Staff;
 use App\Models\Users;
 use App\Models\Areas;
+use App\Models\FeBrands;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -139,6 +140,55 @@ class StaffAuthenticatedSessionController extends Controller
         // dd($roles);
 
         return redirect()->intended(route('staff-page'))->with('success', 'Registration Successful');
+    }
+
+    /**
+     * Add new FE.
+     */
+    public function addFE(Request $request)
+    {
+        $data = $request->all();
+        $fe_location = $data['location'];
+        $fe_serial_number = $data['serial_number'];
+
+        $fe_exp_date = $fe_exp_date = str_replace('-', '/', $data['expiry_date']);;
+
+        $fe_type = "UNKNOWN";
+
+        if ($fe_serial_number[8] === 'Y'){
+            $fe_type = "ABC";
+        }else if ($fe_serial_number[8] === 'Z'){
+            $fe_type = "CO2";
+        }
+
+        $brands = FeBrands::all();
+
+        $fe_brand = "UNKNOWN";
+
+        foreach ($brands as $brand){
+            if (substr($fe_serial_number, 0, 2) === $brand->short){
+                $fe_brand = $brand->name;
+            }
+        }
+
+        $fe_man_date = substr(substr($fe_serial_number, 2, 6), 0, 2) . '/' . substr(substr($fe_serial_number, 2, 6), 2);
+        $fe_user_id = $data['user_id'];
+        
+        //dd($fe_location, $fe_serial_number, $fe_type, $fe_brand, $fe_man_date, $fe_exp_date, $fe_user_id);
+
+        
+        $fe = FE::create([
+            'fe_location' => $fe_location,
+            'fe_serial_number' => $fe_serial_number,
+            'fe_type' => $fe_type,
+            'fe_brand' => $fe_brand,
+            'fe_man_date' => $fe_man_date,
+            'fe_exp_date' => $fe_exp_date,
+            'fe_user_id' => $fe_user_id
+        ]);
+        $fe->save();
+
+        return view('staff.staff_redirect', ['fe_user_id' => $fe_user_id]);
     }
 
     /**

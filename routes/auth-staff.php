@@ -23,4 +23,6 @@ Route::prefix('staff')->middleware('auth:staff')->group(function () {
     Route::post('register', [StaffAuthenticatedSessionController::class, 'storeReg'])->name('staff-store-reg');
 
     Route::post('logout', [StaffAuthenticatedSessionController::class, 'destroy'])->name('staff-logout');
+
+    Route::post('add-fe', [StaffAuthenticatedSessionController::class, 'addFE'])->name('staff-add-fe');
 });
