@@ -95,7 +95,7 @@
       </div>
       <div class="modal-body">
         <!-- Form Inside the Modal -->
-        <form action="{{ route('staff-add-fe')}}" method="POST">
+        <form action="{{ route('staff-add-fe')}}" autocomplete="off" method="POST">
         @csrf
             <div class="form-group">
                 <label for="serial_number">Serial Number:</label>

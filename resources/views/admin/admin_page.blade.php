@@ -103,7 +103,7 @@
       </div>
       <div class="modal-body">
         <!-- Form Inside the Modal -->
-        <form action="{{ route('admin-store-reg') }}" method="POST">
+        <form action="{{ route('admin-store-reg') }}" autocomplete="off" method="POST">
         @csrf
             <div class="form-group">
                 <label for="role">Register for:</label>
