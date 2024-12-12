@@ -25,4 +25,6 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::post('register', [AdminAuthenticatedSessionController::class, 'storeReg'])->name('admin-store-reg');
 
     Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('admin-logout');
+
+    Route::post('add-fe', [AdminAuthenticatedSessionController::class, 'addFE'])->name('admin-add-fe');
 });

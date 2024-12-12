@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class FE extends Model
 {
     protected $table = 'fire_extinguisher';
-
+    public $timestamps = false;
     /**
      * The attributes that are mass assignable.
      *

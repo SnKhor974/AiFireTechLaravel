@@ -69,6 +69,7 @@
                 <th>User ID</th>
                 <th>Username</th>
                 <th>Area</th>
+                <th>Staff in Charge</th>
             </tr>
 
             @foreach($user_list as $user)
@@ -76,6 +77,11 @@
                     <td>{{$user->id}}</td>
                     <td>{{$user->username}}</td>
                     <td>{{$user->area}}</td>
+                    <td>@foreach ($staff_list as $staff)
+                        @if ($user->staff_id_in_charge == $staff->id)
+                            {{$staff->username}}
+                        @endif
+                    @endforeach</td>
                 </tr>
             @endforeach
         </table>
