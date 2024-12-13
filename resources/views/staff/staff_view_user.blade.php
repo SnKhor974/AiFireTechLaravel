@@ -103,7 +103,7 @@
             </div>
             <div class="form-group">
                 <label for="expiry_date">Expiry Date:</label>
-                <input type="text" id="expiry_date" name="expiry_date" required>
+                <input type="text" id="expiry_date" name="expiry_date" placeholder="MM/YYYY" required>
             </div>
             <div class="form-group">
                 <label for="location">Location:</label>
