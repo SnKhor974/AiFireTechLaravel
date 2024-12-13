@@ -77,11 +77,17 @@
                     <td>{{$user->id}}</td>
                     <td>{{$user->username}}</td>
                     <td>{{$user->area}}</td>
-                    <td>@foreach ($staff_list as $staff)
-                        @if ($user->staff_id_in_charge == $staff->id)
-                            {{$staff->username}}
+                    <td>
+                        @if ($user->staff_id_in_charge == 0)
+                            Admin
+                        @else
+                            @foreach ($staff_list as $staff)
+                                @if ($user->staff_id_in_charge == $staff->id)
+                                    {{ $staff->username }}
+                                @endif
+                            @endforeach
                         @endif
-                    @endforeach</td>
+                    </td>
                 </tr>
             @endforeach
         </table>

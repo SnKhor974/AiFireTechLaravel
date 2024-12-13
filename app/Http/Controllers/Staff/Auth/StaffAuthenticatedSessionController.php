@@ -129,7 +129,7 @@ class StaffAuthenticatedSessionController extends Controller
             'person_in_charge' => $data['person_in_charge'],
             'contact' => $data['contact'],
             'email' => $data['email'],
-            'area' => $data['area'],
+            'area' => $data['search_area'],
             'staff_id_in_charge' => Staff::where('username', Auth::guard('staff')->user()->username)->first()->id,
         ]);
 
