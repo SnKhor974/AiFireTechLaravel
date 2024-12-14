@@ -55,7 +55,7 @@ class AdminAuthenticatedSessionController extends Controller
 
         //get all users
         $user_list = Users::all();
-
+        dd($user_list[5]);
         //get all staff
         $staff_list = Staff::all();
 
@@ -289,5 +289,37 @@ class AdminAuthenticatedSessionController extends Controller
 
         return response()->download($destinationFile, $fileName)->deleteFileAfterSend(true);
 
+    }
+    public function getUsersData()
+    {
+        // Fetch data from your database (you can customize this)
+        $users = Users::all()->get();
+        // Map data to a structure that DataTable expects
+        $data = $users->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'username' => $user->username,
+                'area' => $user->area,
+                'staff_in_charge' => $user->staff_id_in_charge ? $user->person_in_charge : null,
+                'staff_username' => $user->staff_id_in_charge ? $user->person_in_charge : null,
+            ];
+        });
+
+        // Return the data as a JSON response
+        return response()->json(['data' => $data]);
+    }
+
+    public function deleteUser(Request $request)
+    {
+        $userId = $request->input('id');
+
+        // Find the user and delete
+        $user = User::find($userId);
+        if ($user) {
+            $user->delete();
+            return response()->json(['success' => true]);
+        } else {
+            return response()->json(['success' => false]);
+        }
     }
 }

@@ -27,4 +27,9 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('admin-logout');
 
     Route::post('add-fe', [AdminAuthenticatedSessionController::class, 'addFE'])->name('admin-add-fe');
+
+    Route::post('/admin-page/getUsersData', [AdminAuthenticatedSessionController::class, 'getUsersData'])->name('getUsersData');
+
+    Route::post('/admin-page/delete-user', [AdminAuthenticatedSessionController::class, 'deleteUser']);
+    
 });

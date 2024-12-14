@@ -8,6 +8,9 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/sakura.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+  
+
     
 </head>
 <body>
@@ -63,14 +66,28 @@
                 <button>Search</button> 
             </form>
         </div>
+        <!-- <table id="myTable">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Username</th>
+                    <th>Area</th>
+                    <th>Staff in Charge</th>
+                </tr>
+            </thead>
+        </table> -->
 
-        <table>
-            <tr>
-                <th>User ID</th>
-                <th>Username</th>
-                <th>Area</th>
-                <th>Staff in Charge</th>
-            </tr>
+        <table id="myTable">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Username</th>
+                    <th>Area</th>
+                    <th>Staff in Charge</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
 
             @foreach($user_list as $user)
                 <tr>
@@ -188,6 +205,216 @@ const areaNames = <?php echo $area_list; ?>;
 setupAutocomplete("#search_name", profileNames);
 setupAutocomplete("#search_area", areaNames);
 
+$(document).ready(function() {
+    $('#myTable').DataTable({
+        paging: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        lengthChange: false,
+        responsive: true,
+        ajax: {
+            url: "{{ route('getUsersData') }}", // Update with your route
+            type: "POST", // Use POST method
+            dataSrc: function (json) {
+                return json.data; // Ensure that 'data' is the key from your API
+            },
+            data: function(d) {
+                // Send additional data to the server (if needed)
+                return $.extend({}, d, {
+                    // Example: Add any additional parameters here
+                    _token: '{{ csrf_token() }}'  // CSRF token for security
+                });
+            }
+        },
+        columns: [
+            { data: "id" },                // User ID column
+            { data: "username" },          // Username column
+            { data: "area" },              // Area column
+            { data: "staff_in_charge",     // Staff column
+                render: function(data, type, row) {
+                    return data ? row.staff_username : 'Admin'; 
+                }
+            },
+            { data: null,                  // Action column
+                render: function(data, type, row) {
+                    console.log(row)
+                    return `
+                        <button class="view-btn" data-id="${row.id}">View</button>
+                        <button class="edit-btn" data-id="${row.id}">Edit</button>
+                        <button class="delete-btn" data-id="${row.id}">Delete</button>
+                    `;
+                }
+            }
+        ],
+        columnDefs: [
+            { targets: [0], searchable: false, orderable: false }, // Disable sorting/searching for first column
+            { targets: [-1], searchable: false, orderable: false } // Disable sorting/searching for last column (Action column)
+        ],
+        order: [[1, 'desc']],
+    });
+
+    // Handle View button click
+    $(document).on('click', '.view-btn', function() {
+        var userId = $(this).data('id');
+        viewUser(userId);
+    });
+
+    // Handle Edit button click
+    $(document).on('click', '.edit-btn', function() {
+        var userId = $(this).data('id');
+        editUser(userId);
+    });
+
+    // Handle Delete button click
+    $(document).on('click', '.delete-btn', function() {
+        var userId = $(this).data('id');
+        deleteUser(userId);
+    });
+});
+
+        // Function to view user (Redirect or open modal)
+        function viewUser(userId) {
+            window.location.href = "/view-user/" + userId; // Example route to view user
+        }
+
+        // Function to edit user (Open modal or redirect)
+        function editUser(userId) {
+            // Example: Redirect to the edit page
+            window.location.href = "/edit-user/" + userId;
+        }
+
+        // Function to delete user
+        function deleteUser(userId) {
+            if (confirm("Are you sure you want to delete this user?")) {
+                $.ajax({
+                    url: "/delete-user",  // Your delete route
+                    type: "POST",
+                    data: {
+                        id: userId,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('User deleted successfully!');
+                            $('#myTable').DataTable().ajax.reload();  // Reload the table data
+                        } else {
+                            alert('Error deleting user!');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Something went wrong!');
+                    }
+                });
+            }
+        }
+
+    // View user function
+    function viewUser(userId) {
+        window.location.href = "/view-user/" + userId; // Example route to view user
+    }
+// function getData(){
+
+//     var actionCol =
+//     '<a href="javascript:void(0);" class="editsub" data-toggle="tooltip" data-placement="top" ' +
+//     'title="View"><i class="far fa-edit"></i> </a> ';
+//     initJqDataTable('permohonan', {
+
+//     "dom": 'lrtip',
+
+
+
+//     "ajax": {
+//         //"url": '/search',
+//         "url": "{{asset('/EkshibitReceiveList')}}",
+//         "type": "post",
+//         "dataSrc": 'data',
+//         "data": function(d) {
+//                 return $.extend({}, d, getJqTableData());
+//                 }
+//     },
+//     "columns": [
+//         { "data": null },
+//         { "data": "ID_" },
+//         { "data": "REFERENCE_NO" },            
+//         { "data": "PREMISE_NAME" },
+//         { "data": "COMPANY_NAME" },
+//         { "data": "TRANSPORT_REG_NO" },
+//         { "data": null }
+        
+//     ],
+
+//     "columnDefs": [
+//         { "targets": [0], "searchable": false, "orderable": false },
+//         { "targets": [1], "visible": false },
+//         { "targets": -1, "data": null, "defaultContent": actionCol, "searchable": false, "orderable": false,
+//         "render": function(data, type, row){                           
+//                         return data;
+//         }
+//         },
+//         { "targets": [7],"render": function(data, type, row){
+//                 return formatBackendDateTime(row['SUBMIT_DT']);                 
+//                 }
+//         }
+//         // { "targets": [-2], "data": null, "searchable": false, "orderable": false,
+//         //     "render": function(data, type, row){
+//         //         return '<a href="javascript:void(0);" class="editsub" data-toggle="tooltip" ' +
+//         //             'data-placement="top" title="View Record"><i class="far fa-file-alt"></i> </a> ';
+//         //     }
+//         // },
+//         // { "targets": [4],"render": function(data, type, row){
+//         //         return formatBackendDateTime(row['TarikhMemohon']);
+//         //     }
+//         // },
+//         // { "targets": [5],"render": function(data, type, row){
+//         //         return formatBackendDateTime(row['TarikhHantar']);
+//         //     }
+//         // },
+//         // { "targets": [-1], "data": null, "searchable": false, "orderable": false,
+//         //     "render": function(data, type, row){
+//         //         if(row['IDStatusPermohonan'] == '999'){
+//         //             //return data;
+//         //             return '<a href="javascript:void(0);" class="deletesub" data-toggle="tooltip" ' +
+//         //                 'data-placement="top" title="Reply"><i class="far fa-edit"></i> </a>';
+//         //         }
+//         //         else if(row['IDStatusPermohonan'] == '999'){
+//         //             return '<a href="javascript:void(0);" class="deletesub" data-toggle="tooltip" ' +
+//         //                 'data-placement="top" title="Print"><i class="fa fa-print"></i> </a>';
+//         //         }
+//         //         // Print Card Ready for Collection
+//         //         else if(row['IDStatusPermohonan'] == '999'){
+//         //             return '<a href="javascript:void(0);" class="deletesub" data-toggle="tooltip" ' +
+//         //                 'data-placement="top" title="Print"><i class="fa fa-print"></i> </a>';
+//         //         }
+//         //         else{
+//         //             return '';
+//         //         }
+//         //     }
+//         // }
+//     ],
+//     "order": [[1,'desc']],
+//     "lengthChange": false
+//     },
+//     function(tblId, sender, data){
+
+//         // ajaxRead('/_preCheckMsaccess', {'id': data['SUB_MODULE_ID']},
+//         //         function(res){                        
+//         //             if(res.statusMessage != ''){
+//         //                 sAlert('warning', res.statusMessage);
+//         //             }else{
+//         //                 location.href ='/Pengesahan?smid=' + data['SUB_MODULE_ID']   ;   
+//         //             }
+//         //         });
+
+
+//         location.href ='/EkshibitReceiveForm?id=' + data['RAID_ID'] + '&tid=' + data['ID_']  ;  
+    
+
+//     },
+
+//     );
+// }
+
 function setupAutocomplete(inputSelector, dataArray) {
     const inputE1 = document.querySelector(inputSelector);
 
@@ -255,3 +482,4 @@ function toggleUserDiv() {
 }
 
 </script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
