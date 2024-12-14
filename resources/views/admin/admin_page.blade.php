@@ -88,6 +88,16 @@
                             @endforeach
                         @endif
                     </td>
+                    <td>
+                        <form id="redirectForm-{{ $user->id }}" action="{{ route('admin-view-user') }}" method="POST" style="display: none;">
+                            @csrf
+                            <input type="hidden" name="search" value="id">
+                            <input type="hidden" name="search_id" value="{{ $user->id }}">
+                        </form>
+                        <button onclick="document.getElementById('redirectForm-{{ $user->id }}').submit();">
+                            View
+                        </button>
+                    </td>
                 </tr>
             @endforeach
         </table>
