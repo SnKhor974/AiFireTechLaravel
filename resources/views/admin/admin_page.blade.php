@@ -8,6 +8,9 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/sakura.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+  
+
     
 </head>
 <body>
@@ -37,7 +40,7 @@
         </form>
         <p><a href="#" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">Log out</a></p>
 
-        <label style="font-size:30px">Check user details: </label>
+        <!-- <label style="font-size:30px">Check user details: </label>
         <div>
             <form method="post" autocomplete="off" action="{{ route('admin-view-user') }}">
                 @csrf
@@ -62,17 +65,31 @@
                 </div>
                 <button>Search</button> 
             </form>
-        </div>
+        </div> -->
+        <!-- <table id="myTable">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Username</th>
+                    <th>Area</th>
+                    <th>Staff in Charge</th>
+                </tr>
+            </thead>
+        </table> -->
 
-        <table>
-            <tr>
-                <th>User ID</th>
-                <th>Username</th>
-                <th>Area</th>
-                <th>Staff in Charge</th>
-            </tr>
+        <table id="myTable">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Username</th>
+                    <th>Area</th>
+                    <th>Staff in Charge</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
 
-            @foreach($user_list as $user)
+
+            <!-- @foreach($user_list as $user)
                 <tr>
                     <td>{{$user->id}}</td>
                     <td>{{$user->username}}</td>
@@ -99,7 +116,7 @@
                         </button>
                     </td>
                 </tr>
-            @endforeach
+            @endforeach -->
         </table>
     </div>
     
@@ -177,7 +194,7 @@
   </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script type="text/javascript">
@@ -185,63 +202,166 @@
 const profileNames = <?php echo $name_list; ?>;
 const areaNames = <?php echo $area_list; ?>;
 
-setupAutocomplete("#search_name", profileNames);
-setupAutocomplete("#search_area", areaNames);
 
-function setupAutocomplete(inputSelector, dataArray) {
-    const inputE1 = document.querySelector(inputSelector);
 
-    inputE1.addEventListener("input", function() {
-        onInputChange(inputE1, dataArray);
+$(document).ready(function() {
+    console.log($('#myTable'));
+    $('#myTable').DataTable({
+        paging: true,
+        searching: true,
+        ordering: true,
+        lengthChange: false,
+        responsive: true,
+        ajax: {
+            url: "{{ route('getUsersData') }}", // Update with your route
+            type: "POST", // Use POST method
+            dataSrc: function (json) {
+                return json.data; // Ensure that 'data' is the key from your API
+            },
+            data: function(d) {
+                // Send additional data to the server (if needed)
+                return $.extend({}, d, {
+                    // Example: Add any additional parameters here
+                    _token: '{{ csrf_token() }}'  // CSRF token for security
+                });
+            }
+        },
+        columns: [
+            { data: "id" },                // User ID column
+            { data: "username" },          // Username column
+            { data: "area" },              // Area column
+            { data: "staff_in_charge" },
+            { data: null,                  // Action column
+                render: function(data, type, row) {
+                    console.log(row)
+                    return `
+                        <button class="btn btn-primary view-btn" data-id="${row.id}" >View</button>
+                        <button class="btn btn-warning edit-btn" data-id="${row.id}">Edit</button>
+                        <button class="btn btn-danger delete-btn" data-id="${row.id}">Delete</button>
+                    `;
+                }
+            }
+        ],
+        columnDefs: [
+            { targets: [0], searchable: false, orderable: false }, // Disable sorting/searching for first column
+            { targets: [-1], searchable: false, orderable: false } // Disable sorting/searching for last column (Action column)
+        ],
+        order: [[0, 'asc']],
     });
 
-    function onInputChange(inputE1, dataArray) {
-        removeAutocompleteDropdown(inputE1);
+    // Handle View button click
+    $(document).on('click', '.view-btn', function() {
+        alert("fjskabfjkas");
+        var userId = $(this).data('id');
+        window.location.href = "{{ route('admin-view-user') }}?id=" + userId;
+    });
 
-        const value = inputE1.value;
+    // Handle Edit button click
+    $(document).on('click', '.edit-btn', function() {
+        var userId = $(this).data('id');
+        editUser(userId);
+    });
 
-        if (value.length === 0) return;
+    // Handle Delete button click
+    $(document).on('click', '.delete-btn', function() {
+        var userId = $(this).data('id');
+        deleteUser(userId);
+    });
+});
 
-        const filteredNames = dataArray.filter(name => 
-            name.substr(0, value.length).toLowerCase() === value.toLowerCase()
-        );
 
-        createAutocompleteDropdown(filteredNames, inputE1);
+
+        // Function to edit user (Open modal or redirect)
+        function editUser(userId) {
+            // Example: Redirect to the edit page
+            window.location.href = "/edit-user/" + userId;
+        }
+
+        // Function to delete user
+        function deleteUser(userId) {
+            if (confirm("Are you sure you want to delete this user?")) {
+                $.ajax({
+                    url: "/delete-user",  // Your delete route
+                    type: "POST",
+                    data: {
+                        id: userId,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('User deleted successfully!');
+                            $('#myTable').DataTable().ajax.reload();  // Reload the table data
+                        } else {
+                            alert('Error deleting user!');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Something went wrong!');
+                    }
+                });
+            }
+        }
+
+    // View user function
+    function viewUser(userId) {
+        window.location.href = "{{route('admin-view-user')}}"; // Example route to view user
     }
 
-    function createAutocompleteDropdown(list, inputE1) {
-        const listE1 = document.createElement("ul");
-        listE1.className = "autocomplete-list";
-        listE1.id = "autocomplete-list";
 
-        list.forEach(name => {
-            const listItem = document.createElement("li");
-            const nameButton = document.createElement("button");
-            nameButton.innerHTML = name;
-            nameButton.addEventListener("click", function(e) {
-                onNameButtonClick(e, inputE1);
-            });
-            listItem.appendChild(nameButton);
+// function setupAutocomplete(inputSelector, dataArray) {
+//     const inputE1 = document.querySelector(inputSelector);
 
-            listE1.appendChild(listItem);
-        });
+//     inputE1.addEventListener("input", function() {
+//         onInputChange(inputE1, dataArray);
+//     });
 
-        inputE1.parentNode.appendChild(listE1);
-    }
+//     function onInputChange(inputE1, dataArray) {
+//         removeAutocompleteDropdown(inputE1);
 
-    function removeAutocompleteDropdown(inputE1) {
-        const listE1 = inputE1.parentNode.querySelector(".autocomplete-list");
-        if (listE1) listE1.remove();
-    }
+//         const value = inputE1.value;
 
-    function onNameButtonClick(e, inputE1) {
-        e.preventDefault();
-        const buttonE1 = e.target;
-        inputE1.value = buttonE1.innerHTML;
+//         if (value.length === 0) return;
 
-        removeAutocompleteDropdown(inputE1);
-    }
-}
+//         const filteredNames = dataArray.filter(name => 
+//             name.substr(0, value.length).toLowerCase() === value.toLowerCase()
+//         );
+
+//         createAutocompleteDropdown(filteredNames, inputE1);
+//     }
+
+//     function createAutocompleteDropdown(list, inputE1) {
+//         const listE1 = document.createElement("ul");
+//         listE1.className = "autocomplete-list";
+//         listE1.id = "autocomplete-list";
+
+//         list.forEach(name => {
+//             const listItem = document.createElement("li");
+//             const nameButton = document.createElement("button");
+//             nameButton.innerHTML = name;
+//             nameButton.addEventListener("click", function(e) {
+//                 onNameButtonClick(e, inputE1);
+//             });
+//             listItem.appendChild(nameButton);
+
+//             listE1.appendChild(listItem);
+//         });
+
+//         inputE1.parentNode.appendChild(listE1);
+//     }
+
+//     function removeAutocompleteDropdown(inputE1) {
+//         const listE1 = inputE1.parentNode.querySelector(".autocomplete-list");
+//         if (listE1) listE1.remove();
+//     }
+
+//     function onNameButtonClick(e, inputE1) {
+//         e.preventDefault();
+//         const buttonE1 = e.target;
+//         inputE1.value = buttonE1.innerHTML;
+
+//         removeAutocompleteDropdown(inputE1);
+//     }
+// }
 
 function toggleUserDiv() {
     const role = document.getElementById('role').value;
@@ -255,3 +375,4 @@ function toggleUserDiv() {
 }
 
 </script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
