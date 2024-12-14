@@ -305,7 +305,7 @@ class AdminAuthenticatedSessionController extends Controller
         $userId = $request->input('id');
 
         // Find the user and delete
-        $user = User::find($userId);
+        $user = Users::find($userId);
         if ($user) {
             $user->delete();
             return response()->json(['success' => true]);
