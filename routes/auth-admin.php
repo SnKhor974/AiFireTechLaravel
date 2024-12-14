@@ -18,7 +18,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 
     Route::get('admin-page', [AdminAuthenticatedSessionController::class, 'proceed'])->name('admin-page');
 
-    Route::post('/admin-page/view-user', [AdminAuthenticatedSessionController::class, 'viewUser'])->name('admin-view-user');
+    Route::get('/admin-page/view-user', [AdminAuthenticatedSessionController::class, 'viewUser'])->name('admin-view-user');
 
     Route::get('generate-report', [AdminAuthenticatedSessionController::class, 'generateReport'])->name('admin-generate-report');
 

@@ -40,7 +40,7 @@
         </form>
         <p><a href="#" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">Log out</a></p>
 
-        <label style="font-size:30px">Check user details: </label>
+        <!-- <label style="font-size:30px">Check user details: </label>
         <div>
             <form method="post" autocomplete="off" action="{{ route('admin-view-user') }}">
                 @csrf
@@ -65,7 +65,7 @@
                 </div>
                 <button>Search</button> 
             </form>
-        </div>
+        </div> -->
         <!-- <table id="myTable">
             <thead>
                 <tr>
@@ -202,8 +202,7 @@
 const profileNames = <?php echo $name_list; ?>;
 const areaNames = <?php echo $area_list; ?>;
 
-setupAutocomplete("#search_name", profileNames);
-setupAutocomplete("#search_area", areaNames);
+
 
 $(document).ready(function() {
     console.log($('#myTable'));
@@ -236,7 +235,7 @@ $(document).ready(function() {
                 render: function(data, type, row) {
                     console.log(row)
                     return `
-                        <button class="btn btn-primary view-btn" data-id="${row.id}">View</button>
+                        <button class="btn btn-primary view-btn" data-id="${row.id}" >View</button>
                         <button class="btn btn-warning edit-btn" data-id="${row.id}">Edit</button>
                         <button class="btn btn-danger delete-btn" data-id="${row.id}">Delete</button>
                     `;
@@ -252,8 +251,9 @@ $(document).ready(function() {
 
     // Handle View button click
     $(document).on('click', '.view-btn', function() {
+        alert("fjskabfjkas");
         var userId = $(this).data('id');
-        viewUser(userId);
+        window.location.href = "{{ route('admin-view-user') }}?id=" + userId;
     });
 
     // Handle Edit button click
@@ -269,10 +269,7 @@ $(document).ready(function() {
     });
 });
 
-        // Function to view user (Redirect or open modal)
-        function viewUser(userId) {
-            window.location.href = "/view-user/" + userId; // Example route to view user
-        }
+
 
         // Function to edit user (Open modal or redirect)
         function editUser(userId) {
@@ -307,164 +304,64 @@ $(document).ready(function() {
 
     // View user function
     function viewUser(userId) {
-        window.location.href = "/view-user/" + userId; // Example route to view user
+        window.location.href = "{{route('admin-view-user')}}"; // Example route to view user
     }
-// function getData(){
-
-//     var actionCol =
-//     '<a href="javascript:void(0);" class="editsub" data-toggle="tooltip" data-placement="top" ' +
-//     'title="View"><i class="far fa-edit"></i> </a> ';
-//     initJqDataTable('permohonan', {
-
-//     "dom": 'lrtip',
 
 
+// function setupAutocomplete(inputSelector, dataArray) {
+//     const inputE1 = document.querySelector(inputSelector);
 
-//     "ajax": {
-//         //"url": '/search',
-//         "url": "{{asset('/EkshibitReceiveList')}}",
-//         "type": "post",
-//         "dataSrc": 'data',
-//         "data": function(d) {
-//                 return $.extend({}, d, getJqTableData());
-//                 }
-//     },
-//     "columns": [
-//         { "data": null },
-//         { "data": "ID_" },
-//         { "data": "REFERENCE_NO" },            
-//         { "data": "PREMISE_NAME" },
-//         { "data": "COMPANY_NAME" },
-//         { "data": "TRANSPORT_REG_NO" },
-//         { "data": null }
-        
-//     ],
+//     inputE1.addEventListener("input", function() {
+//         onInputChange(inputE1, dataArray);
+//     });
 
-//     "columnDefs": [
-//         { "targets": [0], "searchable": false, "orderable": false },
-//         { "targets": [1], "visible": false },
-//         { "targets": -1, "data": null, "defaultContent": actionCol, "searchable": false, "orderable": false,
-//         "render": function(data, type, row){                           
-//                         return data;
-//         }
-//         },
-//         { "targets": [7],"render": function(data, type, row){
-//                 return formatBackendDateTime(row['SUBMIT_DT']);                 
-//                 }
-//         }
-//         // { "targets": [-2], "data": null, "searchable": false, "orderable": false,
-//         //     "render": function(data, type, row){
-//         //         return '<a href="javascript:void(0);" class="editsub" data-toggle="tooltip" ' +
-//         //             'data-placement="top" title="View Record"><i class="far fa-file-alt"></i> </a> ';
-//         //     }
-//         // },
-//         // { "targets": [4],"render": function(data, type, row){
-//         //         return formatBackendDateTime(row['TarikhMemohon']);
-//         //     }
-//         // },
-//         // { "targets": [5],"render": function(data, type, row){
-//         //         return formatBackendDateTime(row['TarikhHantar']);
-//         //     }
-//         // },
-//         // { "targets": [-1], "data": null, "searchable": false, "orderable": false,
-//         //     "render": function(data, type, row){
-//         //         if(row['IDStatusPermohonan'] == '999'){
-//         //             //return data;
-//         //             return '<a href="javascript:void(0);" class="deletesub" data-toggle="tooltip" ' +
-//         //                 'data-placement="top" title="Reply"><i class="far fa-edit"></i> </a>';
-//         //         }
-//         //         else if(row['IDStatusPermohonan'] == '999'){
-//         //             return '<a href="javascript:void(0);" class="deletesub" data-toggle="tooltip" ' +
-//         //                 'data-placement="top" title="Print"><i class="fa fa-print"></i> </a>';
-//         //         }
-//         //         // Print Card Ready for Collection
-//         //         else if(row['IDStatusPermohonan'] == '999'){
-//         //             return '<a href="javascript:void(0);" class="deletesub" data-toggle="tooltip" ' +
-//         //                 'data-placement="top" title="Print"><i class="fa fa-print"></i> </a>';
-//         //         }
-//         //         else{
-//         //             return '';
-//         //         }
-//         //     }
-//         // }
-//     ],
-//     "order": [[1,'desc']],
-//     "lengthChange": false
-//     },
-//     function(tblId, sender, data){
+//     function onInputChange(inputE1, dataArray) {
+//         removeAutocompleteDropdown(inputE1);
 
-//         // ajaxRead('/_preCheckMsaccess', {'id': data['SUB_MODULE_ID']},
-//         //         function(res){                        
-//         //             if(res.statusMessage != ''){
-//         //                 sAlert('warning', res.statusMessage);
-//         //             }else{
-//         //                 location.href ='/Pengesahan?smid=' + data['SUB_MODULE_ID']   ;   
-//         //             }
-//         //         });
+//         const value = inputE1.value;
 
+//         if (value.length === 0) return;
 
-//         location.href ='/EkshibitReceiveForm?id=' + data['RAID_ID'] + '&tid=' + data['ID_']  ;  
-    
+//         const filteredNames = dataArray.filter(name => 
+//             name.substr(0, value.length).toLowerCase() === value.toLowerCase()
+//         );
 
-//     },
+//         createAutocompleteDropdown(filteredNames, inputE1);
+//     }
 
-//     );
+//     function createAutocompleteDropdown(list, inputE1) {
+//         const listE1 = document.createElement("ul");
+//         listE1.className = "autocomplete-list";
+//         listE1.id = "autocomplete-list";
+
+//         list.forEach(name => {
+//             const listItem = document.createElement("li");
+//             const nameButton = document.createElement("button");
+//             nameButton.innerHTML = name;
+//             nameButton.addEventListener("click", function(e) {
+//                 onNameButtonClick(e, inputE1);
+//             });
+//             listItem.appendChild(nameButton);
+
+//             listE1.appendChild(listItem);
+//         });
+
+//         inputE1.parentNode.appendChild(listE1);
+//     }
+
+//     function removeAutocompleteDropdown(inputE1) {
+//         const listE1 = inputE1.parentNode.querySelector(".autocomplete-list");
+//         if (listE1) listE1.remove();
+//     }
+
+//     function onNameButtonClick(e, inputE1) {
+//         e.preventDefault();
+//         const buttonE1 = e.target;
+//         inputE1.value = buttonE1.innerHTML;
+
+//         removeAutocompleteDropdown(inputE1);
+//     }
 // }
-
-function setupAutocomplete(inputSelector, dataArray) {
-    const inputE1 = document.querySelector(inputSelector);
-
-    inputE1.addEventListener("input", function() {
-        onInputChange(inputE1, dataArray);
-    });
-
-    function onInputChange(inputE1, dataArray) {
-        removeAutocompleteDropdown(inputE1);
-
-        const value = inputE1.value;
-
-        if (value.length === 0) return;
-
-        const filteredNames = dataArray.filter(name => 
-            name.substr(0, value.length).toLowerCase() === value.toLowerCase()
-        );
-
-        createAutocompleteDropdown(filteredNames, inputE1);
-    }
-
-    function createAutocompleteDropdown(list, inputE1) {
-        const listE1 = document.createElement("ul");
-        listE1.className = "autocomplete-list";
-        listE1.id = "autocomplete-list";
-
-        list.forEach(name => {
-            const listItem = document.createElement("li");
-            const nameButton = document.createElement("button");
-            nameButton.innerHTML = name;
-            nameButton.addEventListener("click", function(e) {
-                onNameButtonClick(e, inputE1);
-            });
-            listItem.appendChild(nameButton);
-
-            listE1.appendChild(listItem);
-        });
-
-        inputE1.parentNode.appendChild(listE1);
-    }
-
-    function removeAutocompleteDropdown(inputE1) {
-        const listE1 = inputE1.parentNode.querySelector(".autocomplete-list");
-        if (listE1) listE1.remove();
-    }
-
-    function onNameButtonClick(e, inputE1) {
-        e.preventDefault();
-        const buttonE1 = e.target;
-        inputE1.value = buttonE1.innerHTML;
-
-        removeAutocompleteDropdown(inputE1);
-    }
-}
 
 function toggleUserDiv() {
     const role = document.getElementById('role').value;

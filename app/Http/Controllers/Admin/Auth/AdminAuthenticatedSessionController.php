@@ -73,14 +73,16 @@ class AdminAuthenticatedSessionController extends Controller
      */
     public function viewUser(Request $request)
     {
-        dd($request->all());
-        $search = $request->input('search');
 
-        if ($search == 'id') {
-            $id = $request->input('search_id');
+        $data = $request->all();
+        
+        
+
+
+            
 
             //find the user details by id
-            $user_details = Users::find($id);
+            $user_details = Users::find($data['id']);
 
             //show error message if invalid id
             if (!$user_details) {
@@ -92,27 +94,10 @@ class AdminAuthenticatedSessionController extends Controller
             //find the staff name in charge of user
             $staff_name = Staff::find($staff_id)->username; 
             //find the fe list of user 
-            $fe_list = FE::where('fe_user_id', $id)->get();
+            $fe_list = FE::where('fe_user_id', $data['id'])->get();
             return view('admin.admin_view_user', ['user_details' => $user_details, 'fe_list' => $fe_list, 'staff_name' => $staff_name]);
             
-        } else if ($search == 'name') {
-            $name = $request->input('search_name');
 
-            $user_details = Users::where('username', $name)->first();
-
-            if (!$user_details) {
-                return redirect()->back()->with('user_name_invalid', 'User not found.');
-            }
-
-            $staff_id = Staff::where('id', $user_details->staff_id_in_charge)->first()->id;
-
-            $staff_name = Staff::find($staff_id)->username;
-
-            $fe_list = FE::where('fe_user_id', $user_details->id)->get();
-
-            return view('admin.admin_view_user', ['user_details' => $user_details, 'fe_list' => $fe_list, 'staff_name' => $staff_name]);
-    
-        }
     }
 
     /**
