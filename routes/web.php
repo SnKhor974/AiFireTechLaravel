@@ -10,3 +10,4 @@ Route::get('/', function () {
 require __DIR__.'/auth-users.php';
 require __DIR__.'/auth-admin.php';
 require __DIR__.'/auth-staff.php';
+require __DIR__.'/auth-otherAcc.php';

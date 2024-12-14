@@ -48,6 +48,10 @@ return [
             'driver' => 'session',
             'provider' => 'admin',
         ],
+        'otherAcc' => [
+            'driver' => 'session',
+            'provider' => 'otherAcc',
+        ]
     ],
 
     /*
@@ -80,6 +84,10 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
         ],
+        'otherAcc' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\OtherAcc::class,
+        ]
 
         // 'users' => [
         //     'driver' => 'database',
