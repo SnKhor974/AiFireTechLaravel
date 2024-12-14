@@ -55,7 +55,7 @@ class AdminAuthenticatedSessionController extends Controller
 
         //get all users
         $user_list = Users::all();
-        dd($user_list[5]);
+
         //get all staff
         $staff_list = Staff::all();
 
@@ -73,6 +73,7 @@ class AdminAuthenticatedSessionController extends Controller
      */
     public function viewUser(Request $request)
     {
+        dd($request->all());
         $search = $request->input('search');
 
         if ($search == 'id') {
@@ -290,18 +291,23 @@ class AdminAuthenticatedSessionController extends Controller
         return response()->download($destinationFile, $fileName)->deleteFileAfterSend(true);
 
     }
-    public function getUsersData()
-    {
+    public function getUsersData(Request $request)
+    {   
+
         // Fetch data from your database (you can customize this)
-        $users = Users::all()->get();
+        $users = Users::all();
+        $staff = Staff::all();
+        
         // Map data to a structure that DataTable expects
         $data = $users->map(function ($user) {
+
+            $staff_in_charge = ($user->staff_id_in_charge && $user->staff) ? $user->staff->username : 'Admin'; 
+            // $staff_in_charge = optional($user->staff)->username ?: 'Admin';
             return [
                 'id' => $user->id,
                 'username' => $user->username,
                 'area' => $user->area,
-                'staff_in_charge' => $user->staff_id_in_charge ? $user->person_in_charge : null,
-                'staff_username' => $user->staff_id_in_charge ? $user->person_in_charge : null,
+                'staff_in_charge' => $staff_in_charge,
             ];
         });
 

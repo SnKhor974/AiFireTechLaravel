@@ -89,7 +89,7 @@
             </thead>
 
 
-            @foreach($user_list as $user)
+            <!-- @foreach($user_list as $user)
                 <tr>
                     <td>{{$user->id}}</td>
                     <td>{{$user->username}}</td>
@@ -116,7 +116,7 @@
                         </button>
                     </td>
                 </tr>
-            @endforeach
+            @endforeach -->
         </table>
     </div>
     
@@ -194,7 +194,7 @@
   </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script type="text/javascript">
@@ -206,11 +206,11 @@ setupAutocomplete("#search_name", profileNames);
 setupAutocomplete("#search_area", areaNames);
 
 $(document).ready(function() {
+    console.log($('#myTable'));
     $('#myTable').DataTable({
         paging: true,
         searching: true,
         ordering: true,
-        info: true,
         lengthChange: false,
         responsive: true,
         ajax: {
@@ -231,18 +231,14 @@ $(document).ready(function() {
             { data: "id" },                // User ID column
             { data: "username" },          // Username column
             { data: "area" },              // Area column
-            { data: "staff_in_charge",     // Staff column
-                render: function(data, type, row) {
-                    return data ? row.staff_username : 'Admin'; 
-                }
-            },
+            { data: "staff_in_charge" },
             { data: null,                  // Action column
                 render: function(data, type, row) {
                     console.log(row)
                     return `
-                        <button class="view-btn" data-id="${row.id}">View</button>
-                        <button class="edit-btn" data-id="${row.id}">Edit</button>
-                        <button class="delete-btn" data-id="${row.id}">Delete</button>
+                        <button class="btn btn-primary view-btn" data-id="${row.id}">View</button>
+                        <button class="btn btn-warning edit-btn" data-id="${row.id}">Edit</button>
+                        <button class="btn btn-danger delete-btn" data-id="${row.id}">Delete</button>
                     `;
                 }
             }
@@ -251,7 +247,7 @@ $(document).ready(function() {
             { targets: [0], searchable: false, orderable: false }, // Disable sorting/searching for first column
             { targets: [-1], searchable: false, orderable: false } // Disable sorting/searching for last column (Action column)
         ],
-        order: [[1, 'desc']],
+        order: [[0, 'asc']],
     });
 
     // Handle View button click
