@@ -278,7 +278,7 @@ class AdminAuthenticatedSessionController extends Controller
     }
     public function getUsersData(Request $request)
     {   
-
+        
         // Fetch data from your database (you can customize this)
         $users = Users::all();
         $staff = Staff::all();
@@ -286,8 +286,12 @@ class AdminAuthenticatedSessionController extends Controller
         // Map data to a structure that DataTable expects
         $data = $users->map(function ($user) {
 
-            $staff_in_charge = ($user->staff_id_in_charge && $user->staff) ? $user->staff->username : 'Admin'; 
-            // $staff_in_charge = optional($user->staff)->username ?: 'Admin';
+            //find the staff id in charge of user
+            $staff_id = Staff::where('id', $user->staff_id_in_charge)->first()->id;
+
+            //if id is 0, it means admin is in charge, else staff is in charge
+            $staff_in_charge = ($staff_id == 0) ? 'Admin' : Staff::find($staff_id)->username;
+            
             return [
                 'id' => $user->id,
                 'username' => $user->username,
@@ -295,7 +299,6 @@ class AdminAuthenticatedSessionController extends Controller
                 'staff_in_charge' => $staff_in_charge,
             ];
         });
-
         // Return the data as a JSON response
         return response()->json(['data' => $data]);
     }
