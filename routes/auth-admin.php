@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->middleware('guest:admin')->group(function () {
     
-    Route::get('login', [AdminAuthenticatedSessionController::class, 'create'])->name('admin-login-page');
+    Route::get('/login', [AdminAuthenticatedSessionController::class, 'create'])->name('admin-login-page');
 
     Route::post('login', [AdminAuthenticatedSessionController::class, 'store'])->name('admin-login');
 
@@ -30,6 +30,10 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 
     Route::post('/admin-page/getUsersData', [AdminAuthenticatedSessionController::class, 'getUsersData'])->name('getUsersData');
 
-    Route::post('/admin-page/delete-user', [AdminAuthenticatedSessionController::class, 'deleteUser']);
+    Route::get('/admin-page/fetchUserData', [AdminAuthenticatedSessionController::class, 'fetchUserData'])->name('fetchUserData');
+
+    Route::post('/admin-page/update', [AdminAuthenticatedSessionController::class, 'update'])->name('updateUserData');
+
+    Route::post('/admin-page/delete-user', [AdminAuthenticatedSessionController::class, 'deleteUser'])->name('deleteUserData');
     
 });

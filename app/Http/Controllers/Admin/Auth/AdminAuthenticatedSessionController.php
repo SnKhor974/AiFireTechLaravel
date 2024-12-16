@@ -33,7 +33,7 @@ class AdminAuthenticatedSessionController extends Controller
         return view('admin.admin_login', ['account_type' => $account_type]);
     }
 
-    /**
+    /**git 
      * Handle an incoming authentication request.
      */
     public function store(AdminLoginRequest $request): RedirectResponse
@@ -282,11 +282,21 @@ class AdminAuthenticatedSessionController extends Controller
         // Fetch data from your database (you can customize this)
         $users = Users::all();
         $staff = Staff::all();
-        
+        // dd($user->staff);
         // Map data to a structure that DataTable expects
         $data = $users->map(function ($user) {
 
-            $staff_in_charge = ($user->staff_id_in_charge && $user->staff) ? $user->staff->username : 'Admin'; 
+            if ($user->staff_id_in_charge == 0){
+                $staff_in_charge = 'Admin';
+            }else{
+ 
+                $staff = Staff::where('id', $user->staff_id_in_charge)->first();
+                $staff_in_charge = $staff->username;   
+            }
+
+
+
+            // $staff_in_charge = ($user->staff_id_in_charge && $user->staff) ? $user->staff->username : 'Admin'; 
             // $staff_in_charge = optional($user->staff)->username ?: 'Admin';
             return [
                 'id' => $user->id,
@@ -295,6 +305,7 @@ class AdminAuthenticatedSessionController extends Controller
                 'staff_in_charge' => $staff_in_charge,
             ];
         });
+        // dd($data);
 
         // Return the data as a JSON response
         return response()->json(['data' => $data]);
@@ -305,12 +316,52 @@ class AdminAuthenticatedSessionController extends Controller
         $userId = $request->input('id');
 
         // Find the user and delete
-        $user = User::find($userId);
+        $user = Users::find($userId);
         if ($user) {
             $user->delete();
             return response()->json(['success' => true]);
         } else {
             return response()->json(['success' => false]);
         }
+    }
+
+    // Fetch user data for editing
+    public function fetchUserData(Request $request)
+    {
+        // dd($request->id);
+        $user = Users::findOrFail($request->id);
+        if ($user->staff_id_in_charge == 0){
+            $staff_in_charge = 'Admin';
+        }else{
+
+            $staff = Staff::where('id', $user->staff_id_in_charge)->first();
+            $staff_in_charge = $staff->username;   
+        }
+        $user['staff_in_charge'] = $staff_in_charge;
+        
+
+        return response()->json($user);
+    }
+
+    // Update user data
+    public function update(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:users,id',
+            'username' => 'required|string|max:255',
+            'area' => 'required|string|max:255',
+            'staff_in_charge' => 'required|string|max:255',
+        ]);
+
+        $user = User::findOrFail($request->id);
+        $staff = Staff::where('id', $user->staff_id_in_charge)->first();
+        if ($staff) {
+            // Update staff details
+            $staff->username = $request->staff_in_charge; // Assuming 'staff_in_charge' is the new username
+            $staff->save(); // Save changes explicitly
+        }
+        $user->update($request->only(['username', 'area']));
+
+        return response()->json(['message' => 'User updated successfully!']);
     }
 }

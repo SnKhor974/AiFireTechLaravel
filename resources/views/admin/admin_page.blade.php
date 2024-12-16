@@ -194,6 +194,39 @@
   </div>
 </div>
 
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    @csrf
+                    <input type="hidden" id="editUserId" name="id">
+                    <div class="mb-3 form-group">
+                        <label for="editUsername">Username</label>
+                        <input type="text" id="editUsername" name="username" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editArea">Area</label>
+                        <input type="text" id="editArea" name="area" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editStaffInCharge">Staff in Charge</label>
+                        <input type="text" id="editStaffInCharge" name="staff_in_charge" required>
+                    </div>
+                    <button type="submit" >Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -251,15 +284,16 @@ $(document).ready(function() {
 
     // Handle View button click
     $(document).on('click', '.view-btn', function() {
-        alert("fjskabfjkas");
+
         var userId = $(this).data('id');
         window.location.href = "{{ route('admin-view-user') }}?id=" + userId;
     });
 
     // Handle Edit button click
     $(document).on('click', '.edit-btn', function() {
+
         var userId = $(this).data('id');
-        editUser(userId);
+        fetchUserData(userId);
     });
 
     // Handle Delete button click
@@ -267,45 +301,84 @@ $(document).ready(function() {
         var userId = $(this).data('id');
         deleteUser(userId);
     });
+
+    // Fetch user data for editing
+    function fetchUserData(userId) {
+        $.ajax({
+            url: "{{ route('fetchUserData') }}?id=" + userId, // Fetch user data
+            type: "GET",
+            success: function(response) {
+                // Populate modal fields with user data
+                $('#editUserId').val(response.id);
+                $('#editUsername').val(response.username);
+                $('#editArea').val(response.area);
+                $('#editStaffInCharge').val(response.staff_in_charge);
+
+                // Open the modal
+                $('#editUserModal').modal('show');
+            },
+            error: function(xhr) {
+                alert("Error fetching user data!");
+            }
+        });
+    }
+
+     // Handle form submission for saving changes
+     $('#editUserForm').on('submit', function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: "{{ route('updateUserData') }}",// Update user data
+            type: "POST",
+            data: $(this).serialize(),
+            success: function(response) {
+                // Close the modal
+                $('#editUserModal').modal('hide');
+
+                // Refresh DataTable
+                $('#myTable').DataTable().ajax.reload(null, false);
+
+                alert("User updated successfully!");
+            },
+            error: function(xhr) {
+                alert("Error updating user!");
+            }
+        });
+    });
+
+    // Function to delete user
+    function deleteUser(userId) {
+        if (confirm("Are you sure you want to delete this user?")) {
+            $.ajax({
+                url: "{{ route('deleteUserData') }}",  // Your delete route
+                type: "POST",
+                data: {
+                    id: userId,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('User deleted successfully!');
+                        $('#myTable').DataTable().ajax.reload();  // Reload the table data
+                    } else {
+                        alert('Error deleting user!');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Something went wrong!');
+                }
+            });
+        }
+    }
+
+
 });
 
 
 
-        // Function to edit user (Open modal or redirect)
-        function editUser(userId) {
-            // Example: Redirect to the edit page
-            window.location.href = "/edit-user/" + userId;
-        }
+        
 
-        // Function to delete user
-        function deleteUser(userId) {
-            if (confirm("Are you sure you want to delete this user?")) {
-                $.ajax({
-                    url: "/delete-user",  // Your delete route
-                    type: "POST",
-                    data: {
-                        id: userId,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            alert('User deleted successfully!');
-                            $('#myTable').DataTable().ajax.reload();  // Reload the table data
-                        } else {
-                            alert('Error deleting user!');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        alert('Something went wrong!');
-                    }
-                });
-            }
-        }
 
-    // View user function
-    function viewUser(userId) {
-        window.location.href = "{{route('admin-view-user')}}"; // Example route to view user
-    }
 
 
 // function setupAutocomplete(inputSelector, dataArray) {
