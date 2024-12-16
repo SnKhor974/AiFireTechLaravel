@@ -20,7 +20,7 @@ input {
     margin: unset;
     position: absolute;
     width: 100%;
-
+    z-index: 1000;
 }
 .autocomplete-list li{
     border: 1px solid black;

@@ -16,7 +16,7 @@ Route::prefix('staff')->middleware('auth:staff')->group(function () {
 
     Route::get('staff-page', [StaffAuthenticatedSessionController::class, 'proceed'])->name('staff-page');
 
-    Route::post('view-user', [StaffAuthenticatedSessionController::class, 'viewUser'])->name('staff-view-user');
+    Route::get('view-user', [StaffAuthenticatedSessionController::class, 'viewUser'])->name('staff-view-user');
 
     Route::get('generate-report', [StaffAuthenticatedSessionController::class, 'generateReport'])->name('staff-generate-report');
 
@@ -25,4 +25,12 @@ Route::prefix('staff')->middleware('auth:staff')->group(function () {
     Route::post('logout', [StaffAuthenticatedSessionController::class, 'destroy'])->name('staff-logout');
 
     Route::post('add-fe', [StaffAuthenticatedSessionController::class, 'addFE'])->name('staff-add-fe');
+
+    Route::post('getUsersData', [StaffAuthenticatedSessionController::class, 'getUsersData'])->name('staff-getUsersData');
+
+    Route::get('fetchUserData', [StaffAuthenticatedSessionController::class, 'fetchUserData'])->name('staff-fetchUserData');
+
+    Route::post('update', [StaffAuthenticatedSessionController::class, 'update'])->name('staff-updateUserData');
+
+    Route::post('delete-user', [StaffAuthenticatedSessionController::class, 'deleteUser'])->name('staff-deleteUserData');
 });

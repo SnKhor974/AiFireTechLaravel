@@ -38,43 +38,6 @@
         </form>
         <p><a href="#" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">Log out</a></p>
 
-        <!-- <label style="font-size:30px">Check user details: </label>
-        <div>
-            <form method="post" autocomplete="off" action="{{ route('admin-view-user') }}">
-                @csrf
-                <label>Search by ID:</label>
-                @if (session('user_id_invalid'))
-                    <label style="color: red; font-size: 1.5rem;">{{ session('user_id_invalid') }}</label>
-                @endif
-                <input type="hidden" name="search" value="id">
-                <input type="text" name="search_id" id="search_id" placeholder="Enter ID">
-                <button>Search</button>
-            </form>
-        
-            <form method="post" autocomplete="off" action="{{ route('admin-view-user') }}">
-                @csrf
-                <label>Search by Name:</label>
-                @if (session('user_name_invalid'))
-                    <label style="color: red; font-size: 1.5rem">{{ session('user_name_invalid') }}</label>
-                @endif
-                <input type="hidden" name="search" value="name">
-                <div class="autocomplete-wrapper" id="autocomplete-wrapper">
-                    <input type="text" name="search_name" id="search_name" class="form-control" placeholder="Enter Name">
-                </div>
-                <button>Search</button> 
-            </form>
-        </div> -->
-        <!-- <table id="myTable">
-            <thead>
-                <tr>
-                    <th>User ID</th>
-                    <th>Username</th>
-                    <th>Area</th>
-                    <th>Staff in Charge</th>
-                </tr>
-            </thead>
-        </table> -->
-
         <table id="myTable">
             <thead>
                 <tr>
@@ -85,40 +48,8 @@
                     <th>Action</th>
                 </tr>
             </thead>
-
-
-            <!-- @foreach($user_list as $user)
-                <tr>
-                    <td>{{$user->id}}</td>
-                    <td>{{$user->username}}</td>
-                    <td>{{$user->area}}</td>
-                    <td>
-                        @if ($user->staff_id_in_charge == 0)
-                            Admin
-                        @else
-                            @foreach ($staff_list as $staff)
-                                @if ($user->staff_id_in_charge == $staff->id)
-                                    {{ $staff->username }}
-                                @endif
-                            @endforeach
-                        @endif
-                    </td>
-                    <td>
-                        <form id="redirectForm-{{ $user->id }}" action="{{ route('admin-view-user') }}" method="POST" style="display: none;">
-                            @csrf
-                            <input type="hidden" name="search" value="id">
-                            <input type="hidden" name="search_id" value="{{ $user->id }}">
-                        </form>
-                        <button onclick="document.getElementById('redirectForm-{{ $user->id }}').submit();">
-                            View
-                        </button>
-                    </td>
-                </tr>
-            @endforeach -->
         </table>
     </div>
-    
-    
 </body>
 </html>
 
@@ -153,10 +84,6 @@
                 <input type="password" id="password" name="password" required>
             </div>
             
-            <!-- <div class="form-group">
-            <label for="confirm_password">Confirm Password</label>
-            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-            </div> -->
             <div id="userDiv" style="display: none;">
                 <div class="form-group">
                     <label for="company_name">Company name:</label>
@@ -203,21 +130,47 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="editUserForm">
+                <form id="editUserForm" autocomplete="off">
                     @csrf
                     <input type="hidden" id="editUserId" name="id">
                     <div class="mb-3 form-group">
-                        <label for="editUsername">Username</label>
+                        <label for="editUsername">Username:</label>
                         <input type="text" id="editUsername" name="username" required>
                     </div>
                     <div class="mb-3 form-group">
-                        <label for="editArea">Area</label>
-                        <input type="text" id="editArea" name="area" required>
+                        <label for="search_area">Area:</label>
+                        <div class="autocomplete-wrapper" id="autocomplete-wrapper">
+                            <input type="text" name="area" id="editArea" required>
+                        </div>
                     </div>
                     <div class="mb-3 form-group">
-                        <label for="editStaffInCharge">Staff in Charge</label>
-                        <input type="text" id="editStaffInCharge" name="staff_in_charge" required>
+                        <label for="editStaffInCharge">Staff in Charge:</label>
+                        <div class="autocomplete-wrapper" id="autocomplete-wrapper">
+                            <input type="text" id="editStaffInCharge" name="staff_in_charge" required>
+                        </div>
                     </div>
+                    <h5>Account Details</h5>
+                    <div class="mb-3 form-group">
+                        <label for="editCompanyName">Company Name:</label>
+                        <input type="text" id="editCompanyName" name="company_name" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editCompanyAddress">Company Address:</label>
+                        <textarea id="editCompanyAddress" name="company_address" required></textarea>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editPersonInCharge">Person in Charge:</label>
+                        <input type="text" id="editPersonInCharge" name="person_in_charge" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editContact">Contact:</label>
+                        <input type="text" id="editContact" name="contact" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editEmail">Email:</label>
+                        <input type="text" id="editEmail" name="email" required>
+                    </div>
+
                     <button type="submit" >Save Changes</button>
                 </form>
             </div>
@@ -230,11 +183,6 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 
-const profileNames = <?php echo $name_list; ?>;
-const areaNames = <?php echo $area_list; ?>;
-
-
-
 $(document).ready(function() {
     console.log($('#myTable'));
     $('#myTable').DataTable({
@@ -244,7 +192,7 @@ $(document).ready(function() {
         lengthChange: false,
         responsive: true,
         ajax: {
-            url: "{{ route('getUsersData') }}", // Update with your route
+            url: "{{ route('admin-getUsersData') }}", // Update with your route
             type: "POST", // Use POST method
             dataSrc: function (json) {
                 return json.data; // Ensure that 'data' is the key from your API
@@ -301,14 +249,19 @@ $(document).ready(function() {
     // Fetch user data for editing
     function fetchUserData(userId) {
         $.ajax({
-            url: "{{ route('fetchUserData') }}?id=" + userId, // Fetch user data
+            url: "{{ route('admin-fetchUserData') }}?id=" + userId, // Fetch user data
             type: "GET",
             success: function(response) {
                 // Populate modal fields with user data
                 $('#editUserId').val(response.id);
                 $('#editUsername').val(response.username);
                 $('#editArea').val(response.area);
-                $('#editStaffInCharge').val(response.staff_id_in_charge);
+                $('#editStaffInCharge').val(response.staff_in_charge);
+                $('#editCompanyName').val(response.company_name);
+                $('#editCompanyAddress').val(response.company_address);
+                $('#editPersonInCharge').val(response.person_in_charge);
+                $('#editContact').val(response.contact);
+                $('#editEmail').val(response.email);
 
                 // Open the modal
                 $('#editUserModal').modal('show');
@@ -324,7 +277,7 @@ $(document).ready(function() {
         e.preventDefault();
 
         $.ajax({
-            url: "{{ route('updateUserData') }}",// Update user data
+            url: "{{ route('admin-updateUserData') }}",// Update user data
             type: "POST",
             data: $(this).serialize(),
             success: function(response) {
@@ -346,7 +299,7 @@ $(document).ready(function() {
     function deleteUser(userId) {
         if (confirm("Are you sure you want to delete this user?")) {
             $.ajax({
-                url: "{{ route('deleteUserData') }}",  // Your delete route
+                url: "{{ route('admin-deleteUserData') }}",  // Your delete route
                 type: "POST",
                 data: {
                     id: userId,
@@ -370,67 +323,67 @@ $(document).ready(function() {
 
 });
 
+// Autocomplete functionality
+const areaNames = <?php echo $area_list_autocomplete; ?>;
+const staffNames = <?php echo $staff_list_autocomplete; ?>;
 
+setupAutocomplete("#editArea", areaNames);
+setupAutocomplete("#editStaffInCharge", staffNames);
 
-        
+function setupAutocomplete(inputSelector, dataArray) {
+    const inputE1 = document.querySelector(inputSelector);
 
+    inputE1.addEventListener("input", function() {
+        onInputChange(inputE1, dataArray);
+    });
 
+    function onInputChange(inputE1, dataArray) {
+        removeAutocompleteDropdown(inputE1);
 
+        const value = inputE1.value;
 
-// function setupAutocomplete(inputSelector, dataArray) {
-//     const inputE1 = document.querySelector(inputSelector);
+        if (value.length === 0) return;
 
-//     inputE1.addEventListener("input", function() {
-//         onInputChange(inputE1, dataArray);
-//     });
+        const filteredNames = dataArray.filter(name => 
+            name.substr(0, value.length).toLowerCase() === value.toLowerCase()
+        );
 
-//     function onInputChange(inputE1, dataArray) {
-//         removeAutocompleteDropdown(inputE1);
+        createAutocompleteDropdown(filteredNames, inputE1);
+    }
 
-//         const value = inputE1.value;
+    function createAutocompleteDropdown(list, inputE1) {
+        const listE1 = document.createElement("ul");
+        listE1.className = "autocomplete-list";
+        listE1.id = "autocomplete-list";
 
-//         if (value.length === 0) return;
+        list.forEach(name => {
+            const listItem = document.createElement("li");
+            const nameButton = document.createElement("button");
+            nameButton.innerHTML = name;
+            nameButton.addEventListener("click", function(e) {
+                onNameButtonClick(e, inputE1);
+            });
+            listItem.appendChild(nameButton);
 
-//         const filteredNames = dataArray.filter(name => 
-//             name.substr(0, value.length).toLowerCase() === value.toLowerCase()
-//         );
+            listE1.appendChild(listItem);
+        });
 
-//         createAutocompleteDropdown(filteredNames, inputE1);
-//     }
+        inputE1.parentNode.appendChild(listE1);
+    }
 
-//     function createAutocompleteDropdown(list, inputE1) {
-//         const listE1 = document.createElement("ul");
-//         listE1.className = "autocomplete-list";
-//         listE1.id = "autocomplete-list";
+    function removeAutocompleteDropdown(inputE1) {
+        const listE1 = inputE1.parentNode.querySelector(".autocomplete-list");
+        if (listE1) listE1.remove();
+    }
 
-//         list.forEach(name => {
-//             const listItem = document.createElement("li");
-//             const nameButton = document.createElement("button");
-//             nameButton.innerHTML = name;
-//             nameButton.addEventListener("click", function(e) {
-//                 onNameButtonClick(e, inputE1);
-//             });
-//             listItem.appendChild(nameButton);
+    function onNameButtonClick(e, inputE1) {
+        e.preventDefault();
+        const buttonE1 = e.target;
+        inputE1.value = buttonE1.innerHTML;
 
-//             listE1.appendChild(listItem);
-//         });
-
-//         inputE1.parentNode.appendChild(listE1);
-//     }
-
-//     function removeAutocompleteDropdown(inputE1) {
-//         const listE1 = inputE1.parentNode.querySelector(".autocomplete-list");
-//         if (listE1) listE1.remove();
-//     }
-
-//     function onNameButtonClick(e, inputE1) {
-//         e.preventDefault();
-//         const buttonE1 = e.target;
-//         inputE1.value = buttonE1.innerHTML;
-
-//         removeAutocompleteDropdown(inputE1);
-//     }
-// }
+        removeAutocompleteDropdown(inputE1);
+    }
+}
 
 function toggleUserDiv() {
     const role = document.getElementById('role').value;

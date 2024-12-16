@@ -62,10 +62,12 @@ class AdminAuthenticatedSessionController extends Controller
         //get name list
         $name_list = json_encode(Users::pluck('username')->toArray());
 
-        //get area list
-        $area_list = json_encode(Areas::pluck('area_name')->toArray());
+        //get area and staff list for autocomplete
+        $area_list_autocomplete = json_encode(Areas::pluck('area_name')->toArray());
+        $staff_list_autocomplete = json_encode(Staff::pluck('username')->toArray());
 
-        return view('admin.admin_page', ['username' => $username, 'user_list' => $user_list, 'name_list' => $name_list, 'area_list' => $area_list, 'staff_list' => $staff_list]);
+
+        return view('admin.admin_page', ['username' => $username, 'user_list' => $user_list, 'name_list' => $name_list, 'area_list_autocomplete' => $area_list_autocomplete, 'staff_list' => $staff_list, 'staff_list_autocomplete' => $staff_list_autocomplete]);
     }
 
     /**
@@ -73,30 +75,24 @@ class AdminAuthenticatedSessionController extends Controller
      */
     public function viewUser(Request $request)
     {
-
         $data = $request->all();
         
+        //find the user details by id
+        $user_details = Users::find($data['id']);
+
+        //show error message if invalid id
+        if (!$user_details) {
+            return redirect()->back()->with('user_id_invalid', 'User not found.');
+        }
+    
+        //find the staff id in charge of user
+        $staff_id = Staff::where('id', $user_details->staff_id_in_charge)->first()->id;
+        //find the staff name in charge of user
+        $staff_name = Staff::find($staff_id)->username; 
+        //find the fe list of user 
+        $fe_list = FE::where('fe_user_id', $data['id'])->get();
+        return view('admin.admin_view_user', ['user_details' => $user_details, 'fe_list' => $fe_list, 'staff_name' => $staff_name]);
         
-
-
-            
-
-            //find the user details by id
-            $user_details = Users::find($data['id']);
-
-            //show error message if invalid id
-            if (!$user_details) {
-                return redirect()->back()->with('user_id_invalid', 'User not found.');
-            }
-        
-            //find the staff id in charge of user
-            $staff_id = Staff::where('id', $user_details->staff_id_in_charge)->first()->id;
-            //find the staff name in charge of user
-            $staff_name = Staff::find($staff_id)->username; 
-            //find the fe list of user 
-            $fe_list = FE::where('fe_user_id', $data['id'])->get();
-            return view('admin.admin_view_user', ['user_details' => $user_details, 'fe_list' => $fe_list, 'staff_name' => $staff_name]);
-            
 
     }
 
@@ -267,7 +263,6 @@ class AdminAuthenticatedSessionController extends Controller
 
             $excelrow++;
             $counter++;
-        
         }
         
         $writer = new Xlsx($spreadsheet);
@@ -294,10 +289,6 @@ class AdminAuthenticatedSessionController extends Controller
                 $staff_in_charge = $staff->username;   
             }
 
-
-
-            // $staff_in_charge = ($user->staff_id_in_charge && $user->staff) ? $user->staff->username : 'Admin'; 
-            // $staff_in_charge = optional($user->staff)->username ?: 'Admin';
             return [
                 'id' => $user->id,
                 'username' => $user->username,
@@ -337,7 +328,6 @@ class AdminAuthenticatedSessionController extends Controller
         }
         $user['staff_in_charge'] = $staff_in_charge;
         
-
         return response()->json($user);
     }
 
@@ -349,17 +339,25 @@ class AdminAuthenticatedSessionController extends Controller
             'username' => 'required|string|max:255',
             'area' => 'required|string|max:255',
             'staff_in_charge' => 'required|string|max:255',
+            'company_name' => 'required|string|max:255',
+            'company_address' => 'required|string|max:255',
+            'person_in_charge' => 'string|max:255',
+            'contact' => 'string|max:255',
+            'email' => 'string|max:255'
         ]);
 
+        // Find the user
         $user = Users::findOrFail($request->id);
-        $staff = Staff::where('id', $user->staff_id_in_charge)->first();
-        if ($staff) {
-            // Update staff details
-            $staff->username = $request->staff_in_charge; // Assuming 'staff_in_charge' is the new username
-            $staff->save(); // Save changes explicitly
-        }
-        $user->update($request->only(['username', 'area']));
 
+        // Find the id of new staff in charge
+        $new_staff_id = Staff::where('username', $request->staff_in_charge)->first()->id;
+        
+        // Change the staff in charge of the user
+        $user->staff_id_in_charge = $new_staff_id;
+        $user->save(); // Save changes explicitly
+
+        $user->update($request->only(['username', 'area', 'company_name', 'company_address', 'person_in_charge', 'contact', 'email']));
+        
         return response()->json(['message' => 'User updated successfully!']);
     }
 }

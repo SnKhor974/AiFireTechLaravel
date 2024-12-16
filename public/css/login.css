@@ -4,6 +4,10 @@ body, html{
     height: auto;
     font-family: sans-serif;
 }
+.logo{
+    width: 300px;
+    height: 300px;
+}
 .main{
     width: auto;
     height: auto;
@@ -158,6 +162,16 @@ input::placeholder{
         align-items: center;
     }
     .boxouter{
-        width: 90%;
+        width: 100%;
+        
+    }
+    .logo{
+        width: 150px;
+        height: 150px;
+    }
+
+    .login{
+        padding: unset;
+        padding-bottom: 10px;
     }
 }

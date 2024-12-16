@@ -69,49 +69,22 @@ class StaffAuthenticatedSessionController extends Controller
      * Search user.
      */
     public function viewUser(Request $request)
-    {
-        $search = $request->input('search');
+    { 
+        $data = $request->all();
+        //get the staff id
+        $staff_id = Staff::where('username', Auth::guard('staff')->user()->username)->first()->id;
 
-        if ($search == 'id') {
-            //get the staff id
-            $staff_id = Staff::where('username', Auth::guard('staff')->user()->username)->first()->id;
-            $id = $request->input('search_id');
+        //find the user details by id
+        $user_details = Users::find($data['id']);
 
-            //find the user details by id
-            $user_details = Users::find($id);
-
-            //show error message if invalid id
-            if (!$user_details || $user_details->staff_id_in_charge != $staff_id) {
-                return redirect()->back()->with('user_id_invalid', 'User not found.');
-            }
-        
-            //find the staff id in charge of user
-            $staff_id = Staff::where('id', $user_details->staff_id_in_charge)->first()->id;
-            //find the staff name in charge of user
-            $staff_name = Staff::find($staff_id)->username; 
-            //find the fe list of user 
-            $fe_list = FE::where('fe_user_id', $id)->get();
-            return view('staff.staff_view_user', ['user_details' => $user_details, 'fe_list' => $fe_list, 'staff_name' => $staff_name]);
-            
-    } else if ($search == 'name') {
-            $staff_id = Staff::where('username', Auth::guard('staff')->user()->username)->first()->id;
-            $name = $request->input('search_name');
-
-            $user_details = Users::where('username', $name)->first();
-
-            if (!$user_details || $user_details->staff_id_in_charge != $staff_id) {
-                return redirect()->back()->with('user_name_invalid', 'User not found.');
-            }
-
-            $staff_id = Staff::where('id', $user_details->staff_id_in_charge)->first()->id;
-
-            $staff_name = Staff::find($staff_id)->username;
-
-            $fe_list = FE::where('fe_user_id', $user_details->id)->get();
-
-            return view('staff.staff_view_user', ['user_details' => $user_details, 'fe_list' => $fe_list, 'staff_name' => $staff_name]);
-        
+        //show error message if invalid id
+        if (!$user_details || $user_details->staff_id_in_charge != $staff_id) {
+            return redirect()->back()->with('user_id_invalid', 'User not found.');
         }
+
+        //find the fe list of user 
+        $fe_list = FE::where('fe_user_id', $data['id'])->get();
+        return view('staff.staff_view_user', ['user_details' => $user_details, 'fe_list' => $fe_list]);
     }
 
     /**
@@ -275,4 +248,83 @@ class StaffAuthenticatedSessionController extends Controller
         return response()->download($destinationFile, $fileName)->deleteFileAfterSend(true);
 
     }
+    public function getUsersData(Request $request)
+    {   
+        
+        
+        //get the username of the authenticated user
+        $username = Auth::guard('staff')->user()->username;
+        //get id of staff
+        $staff_id = Staff::where('username', $username)->first()->id;
+        
+        // Get all users that the staff is in charge of
+        $users = Users::where('staff_id_in_charge', $staff_id)->get();
+
+        // dd($user->staff);
+        // Map data to a structure that DataTable expects
+        $data = $users->map(function ($user) {
+
+            return [
+                'id' => $user->id,
+                'username' => $user->username,
+                'area' => $user->area,       
+            ];
+        });
+        // Return the data as a JSON response
+        return response()->json(['data' => $data]);
+    }
+
+    public function deleteUser(Request $request)
+    {
+        $userId = $request->input('id');
+
+        // Find the user and delete
+        $user = Users::find($userId);
+        if ($user) {
+            $user->delete();
+            return response()->json(['success' => true]);
+        } else {
+            return response()->json(['success' => false]);
+        }
+    }
+
+    // Fetch user data for editing
+    public function fetchUserData(Request $request)
+    {
+        // dd($request->id);
+        $user = Users::findOrFail($request->id);
+        if ($user->staff_id_in_charge == 0){
+            $staff_in_charge = 'Admin';
+        }else{
+
+            $staff = Staff::where('id', $user->staff_id_in_charge)->first();
+            $staff_in_charge = $staff->username;   
+        }
+        $user['staff_in_charge'] = $staff_in_charge;
+        
+        return response()->json($user);
+    }
+
+    // Update user data
+    public function update(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:users,id',
+            'username' => 'required|string|max:255',
+            'area' => 'required|string|max:255',
+            'company_name' => 'required|string|max:255',
+            'company_address' => 'required|string|max:255',
+            'person_in_charge' => 'string|max:255',
+            'contact' => 'string|max:255',
+            'email' => 'string|max:255'
+        ]);
+
+        // Find the user
+        $user = Users::findOrFail($request->id);
+
+        $user->update($request->only(['username', 'area', 'company_name', 'company_address', 'person_in_charge', 'contact', 'email']));
+        
+        return response()->json(['message' => 'User updated successfully!']);
+    }
+
 }

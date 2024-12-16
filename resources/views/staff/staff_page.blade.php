@@ -8,6 +8,7 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/sakura.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
   
 </head>
 <body>
@@ -37,57 +38,15 @@
         </form>
         <p><a href="#" onclick="event.preventDefault(); document.getElementById('staff-logout-form').submit();">Log out</a></p>
         
-        <label style="font-size:30px">Check user details: </label>
-        <div>
-            <form method="post" autocomplete="off" action="{{ route('staff-view-user') }}">
-                @csrf
-                <label>Search by ID:</label>
-                @if (session('user_id_invalid'))
-                    <label style="color: red; font-size: 1.5rem;">{{ session('user_id_invalid') }}</label>
-                @endif
-                <input type="hidden" name="search" value="id">
-                <input type="text" name="search_id" id="search_id" placeholder="Enter ID">
-                <button>Search</button>
-            </form>
-        
-            <form method="post" autocomplete="off" action="{{ route('staff-view-user') }}">
-                @csrf
-                <label>Search by Name:</label>
-                @if (session('user_name_invalid'))
-                    <label style="color: red; font-size: 1.5rem">{{ session('user_name_invalid') }}</label>
-                @endif
-                <input type="hidden" name="search" value="name">
-                <div class="autocomplete-wrapper" id="autocomplete-wrapper">
-                    <input type="text" name="search_name" id="search_name" class="form-control" placeholder="Enter Name">
-                </div>
-                <button>Search</button> 
-            </form>
-        </div>
-
-        <table>
-            <tr>
-                <th>User ID</th>
-                <th>Username</th>
-                <th>Area</th>
-            </tr>
-
-            @foreach($user_list as $user)
+        <table id="myTable">
+            <thead>
                 <tr>
-                    <td>{{$user->id}}</td>
-                    <td>{{$user->username}}</td>
-                    <td>{{$user->area}}</td>
-                    <td>
-                        <form id="redirectForm-{{ $user->id }}" action="{{ route('staff-view-user') }}" method="POST" style="display: none;">
-                            @csrf
-                            <input type="hidden" name="search" value="id">
-                            <input type="hidden" name="search_id" value="{{ $user->id }}">
-                        </form>
-                        <button onclick="document.getElementById('redirectForm-{{ $user->id }}').submit();">
-                            View
-                        </button>
-                    </td>
+                    <th>User ID</th>
+                    <th>Username</th>
+                    <th>Area</th>
+                    <th>Action</th>
                 </tr>
-            @endforeach
+            </thead>
         </table>
     </div>
 </body>
@@ -137,9 +96,9 @@
                 </div>
                 <div class="form-group">
                     <label for="search_area">Area:</label>
-                        <div class="autocomplete-wrapper" id="autocomplete-wrapper">
-                            <input type="text" name="search_area" id="search_area">
-                        </div>
+                    <div class="autocomplete-wrapper" id="autocomplete-wrapper">
+                        <input type="text" name="search_area" id="search_area">
+                    </div>
                 </div>
             <button type="submit">Register</button>
         </form>
@@ -148,11 +107,201 @@
   </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm" autocomplete="off">
+                    @csrf
+                    <input type="hidden" id="editUserId" name="id">
+                    <div class="mb-3 form-group">
+                        <label for="editUsername">Username:</label>
+                        <input type="text" id="editUsername" name="username" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="search_area">Area:</label>
+                        <div class="autocomplete-wrapper" id="autocomplete-wrapper">
+                            <input type="text" name="area" id="editArea" required>
+                        </div>
+                    </div>
+                    
+                    <h5>Account Details</h5>
+                    <div class="mb-3 form-group">
+                        <label for="editCompanyName">Company Name:</label>
+                        <input type="text" id="editCompanyName" name="company_name" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editCompanyAddress">Company Address:</label>
+                        <textarea id="editCompanyAddress" name="company_address" required></textarea>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editPersonInCharge">Person in Charge:</label>
+                        <input type="text" id="editPersonInCharge" name="person_in_charge" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editContact">Contact:</label>
+                        <input type="text" id="editContact" name="contact" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editEmail">Email:</label>
+                        <input type="text" id="editEmail" name="email" required>
+                    </div>
+                    <button type="submit" >Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script type="text/javascript">
+$(document).ready(function() {
+    console.log($('#myTable'));
+    $('#myTable').DataTable({
+        paging: true,
+        searching: true,
+        ordering: true,
+        lengthChange: false,
+        responsive: true,
+        ajax: {
+            url: "{{ route('staff-getUsersData') }}", // Update with your route
+            type: "POST", // Use POST method
+            dataSrc: function (json) {
+                return json.data; // Ensure that 'data' is the key from your API
+            },
+            data: function(d) {
+                // Send additional data to the server (if needed)
+                return $.extend({}, d, {
+                    // Example: Add any additional parameters here
+                    _token: '{{ csrf_token() }}'  // CSRF token for security
+                });
+            }
+        },
+        columns: [
+            { data: "id" },                // User ID column
+            { data: "username" },          // Username column
+            { data: "area" },              // Area column
+            { data: null,                  // Action column
+                render: function(data, type, row) {
+                    console.log(row)
+                    return `
+                        <button class="btn btn-primary view-btn" data-id="${row.id}" >View</button>
+                        <button class="btn btn-warning edit-btn" data-id="${row.id}">Edit</button>
+                        <button class="btn btn-danger delete-btn" data-id="${row.id}">Delete</button>
+                    `;
+                }
+            }
+        ],
+        columnDefs: [
+            { targets: [-1], searchable: false, orderable: false } // Disable sorting/searching for last column (Action column)
+        ],
+        order: [[0, 'asc']],
+    });
 
+    // Handle View button click
+    $(document).on('click', '.view-btn', function() {
+        var userId = $(this).data('id');
+        window.location.href = "{{ route('staff-view-user') }}?id=" + userId;
+    });
+
+    // Handle Edit button click
+    $(document).on('click', '.edit-btn', function() {
+
+        var userId = $(this).data('id');
+        fetchUserData(userId);
+    });
+
+    // Handle Delete button click
+    $(document).on('click', '.delete-btn', function() {
+        var userId = $(this).data('id');
+        deleteUser(userId);
+    });
+
+    // Fetch user data for editing
+    function fetchUserData(userId) {
+        $.ajax({
+            url: "{{ route('staff-fetchUserData') }}?id=" + userId, // Fetch user data
+            type: "GET",
+            success: function(response) {
+                // Populate modal fields with user data
+                $('#editUserId').val(response.id);
+                $('#editUsername').val(response.username);
+                $('#editArea').val(response.area);
+                $('#editStaffInCharge').val(response.staff_in_charge);
+                $('#editCompanyName').val(response.company_name);
+                $('#editCompanyAddress').val(response.company_address);
+                $('#editPersonInCharge').val(response.person_in_charge);
+                $('#editContact').val(response.contact);
+                $('#editEmail').val(response.email);
+
+                // Open the modal
+                $('#editUserModal').modal('show');
+            },
+            error: function(xhr) {
+                alert("Error fetching user data!");
+            }
+        });
+    }
+
+     // Handle form submission for saving changes
+     $('#editUserForm').on('submit', function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: "{{ route('staff-updateUserData') }}",// Update user data
+            type: "POST",
+            data: $(this).serialize(),
+            success: function(response) {
+                // Close the modal
+                $('#editUserModal').modal('hide');
+
+                // Refresh DataTable
+                $('#myTable').DataTable().ajax.reload(null, false);
+
+                alert("User updated successfully!");
+            },
+            error: function(xhr) {
+                alert("Error updating user!");
+            }
+        });
+    });
+
+    // Function to delete user
+    function deleteUser(userId) {
+        if (confirm("Are you sure you want to delete this user?")) {
+            $.ajax({
+                url: "{{ route('staff-deleteUserData') }}",  // Your delete route
+                type: "POST",
+                data: {
+                    id: userId,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('User deleted successfully!');
+                        $('#myTable').DataTable().ajax.reload();  // Reload the table data
+                    } else {
+                        alert('Error deleting user!');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Something went wrong!');
+                }
+            });
+        }
+    }
+});
+
+// Autocomplete functionality
 const profileNames = <?php echo $name_list; ?>;
 const areaNames = <?php echo $area_list; ?>;
 
@@ -214,3 +363,4 @@ function setupAutocomplete(inputSelector, dataArray) {
     }
 }
 </script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>

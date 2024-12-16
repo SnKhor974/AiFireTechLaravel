@@ -19,6 +19,11 @@
     </form>
 
     <h2>Staff in charge - {{$staff_name}}</h2>
+    
+    <form>
+        <button type="button" class="edit-btn" data-id="{{ $user_details->id }}">Edit Details</button>
+    </form>
+
     <table>
         <tr>
             <td>Company Name:</td>
@@ -39,6 +44,10 @@
         <tr>
             <td>Email:</td>
             <td>{{$user_details->email}}</td>
+        </tr>
+        <tr>
+            <td>Area:</td>
+            <td>{{$user_details->area}}</td>
         </tr>
     </table>
 
@@ -120,7 +129,123 @@
   </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm" autocomplete="off">
+                    @csrf
+                    <input type="hidden" id="editUserId" name="id">
+                    <div class="mb-3 form-group">
+                        <label for="editUsername">Username:</label>
+                        <input type="text" id="editUsername" name="username" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="search_area">Area:</label>
+                        <div class="autocomplete-wrapper" id="autocomplete-wrapper">
+                            <input type="text" name="area" id="editArea" required>
+                        </div>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editStaffInCharge">Staff in Charge:</label>
+                        <div class="autocomplete-wrapper" id="autocomplete-wrapper">
+                            <input type="text" id="editStaffInCharge" name="staff_in_charge" required>
+                        </div>
+                    </div>
+                    <h5>Account Details</h5>
+                    <div class="mb-3 form-group">
+                        <label for="editCompanyName">Company Name:</label>
+                        <input type="text" id="editCompanyName" name="company_name" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editCompanyAddress">Company Address:</label>
+                        <textarea id="editCompanyAddress" name="company_address" required></textarea>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editPersonInCharge">Person in Charge:</label>
+                        <input type="text" id="editPersonInCharge" name="person_in_charge" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editContact">Contact:</label>
+                        <input type="text" id="editContact" name="contact" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editEmail">Email:</label>
+                        <input type="text" id="editEmail" name="email" required>
+                    </div>
+
+                    <button type="submit" >Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script type="text/javascript">
+
+$(document).ready(function() {
+
+    // Handle Edit button click
+    $(document).on('click', '.edit-btn', function() {
+        var userId = $(this).data('id');
+        fetchUserData(userId);
+    });
+    
+    // Fetch user data for editing
+    function fetchUserData(userId) {
+        $.ajax({
+            url: "{{ route('admin-fetchUserData') }}?id=" + userId, // Fetch user data
+            type: "GET",
+            success: function(response) {
+                // Populate modal fields with user data
+                $('#editUserId').val(response.id);
+                $('#editUsername').val(response.username);
+                $('#editArea').val(response.area);
+                $('#editStaffInCharge').val(response.staff_in_charge);
+                $('#editCompanyName').val(response.company_name);
+                $('#editCompanyAddress').val(response.company_address);
+                $('#editPersonInCharge').val(response.person_in_charge);
+                $('#editContact').val(response.contact);
+                $('#editEmail').val(response.email);
+
+                // Open the modal
+                $('#editUserModal').modal('show');
+            },
+            error: function(xhr) {
+                alert("Error fetching user data!");
+            }
+        });
+    }
+
+     // Handle form submission for saving changes
+     $('#editUserForm').on('submit', function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: "{{ route('admin-updateUserData') }}",// Update user data
+            type: "POST",
+            data: $(this).serialize(),
+            success: function(response) {
+                // Close the modal
+                $('#editUserModal').modal('hide');
+
+                alert("User updated successfully!");
+                location.reload();
+            },
+            error: function(xhr) {
+                alert("Error updating user!");
+            }
+        });
+    });
+});
+</script>

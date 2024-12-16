@@ -11,7 +11,7 @@
     <body>
         <div class="mainbody">
             <div class="main">
-                <img src="{{ asset('img/aifiretechlogo.png') }}" alt="AiFireTechnology"style="width: 300px; height: 300px;">
+                <img src="{{ asset('img/aifiretechlogo.png') }}" alt="AiFireTechnology" class="logo">
 
                 <div class="boxouter">
                     <div class="box">
