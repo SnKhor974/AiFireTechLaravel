@@ -10,7 +10,7 @@
     <body>
         <div class="background-image" style="background-image: url('img/index-background.jpg');">
             <div class="transparent-box">
-                <div class="section left">
+                <div class="section-left">
                     <img src="img/aifiretechlogo.png" class="aifiretechlogo">
                     <div class="title">
                         <h1>
@@ -23,7 +23,7 @@
                         
                     </div>
                 </div>
-                <div class="section right">
+                <div class="section-right">
                     <div class="menu">
                         <div class="dropdown">
                             <button class=""><b>Log In</b></button>

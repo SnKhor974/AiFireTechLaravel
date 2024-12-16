@@ -28,9 +28,13 @@ body, html {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
-.section {
+.section-left{
     flex: 1;
     
+}
+
+.section-right{
+    flex: 1;
 }
 
 .aifiretechlogo{

@@ -243,7 +243,6 @@ $(document).ready(function() {
             }
         ],
         columnDefs: [
-            { targets: [0], searchable: false, orderable: false }, // Disable sorting/searching for first column
             { targets: [-1], searchable: false, orderable: false } // Disable sorting/searching for last column (Action column)
         ],
         order: [[0, 'asc']],
@@ -251,7 +250,6 @@ $(document).ready(function() {
 
     // Handle View button click
     $(document).on('click', '.view-btn', function() {
-        alert("fjskabfjkas");
         var userId = $(this).data('id');
         window.location.href = "{{ route('admin-view-user') }}?id=" + userId;
     });
