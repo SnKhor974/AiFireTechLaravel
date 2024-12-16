@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Login as Staff</title>
+        <title>Login as Others</title>
         <link rel="icon" type="image/png" href="{{ asset('img/aifiretechlogo.png')}}">
         <link rel="stylesheet" type="text/css" href="{{ asset('css/login.css') }}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,12 +16,11 @@
                 <div class="boxouter">
                     <div class="box">
                         <div class="login">
-                            <form method="post" autocomplete="off" action="{{ route( 'staff-login') }}">
+                            <form method="post" autocomplete="off" action="{{ route( 'otherAcc-login') }}">
                             @csrf
-                                <h1 style="font-size: 2rem;">Login as Staff:</h1>
-
-                                @if (session('staff_login_error'))
-                                    <label style="color: red;">{{ session('staff_login_error') }}</label>
+                                <h1 style="font-size: 2rem;">Login as Others:</h1>
+                                @if (session('otherAcc_login_error'))
+                                    <label style="color: red;">{{ session('otherAcc_login_error') }}</label>
                                 @endif
                      
                                 <input type="text" name="username" id="username" placeholder="Username" required>

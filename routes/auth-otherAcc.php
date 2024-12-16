@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Users\Auth\OtherAccAuthenticatedSessionController;
+use App\Http\Controllers\OtherAcc\Auth\OtherAccAuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
 

@@ -41,10 +41,8 @@ class OtherAccAuthenticatedSessionController extends Controller
     {
         //get the username of the authenticated user
         $username = Auth::guard('otherAcc')->user()->username;
-        //get id of user
-        $user_id = OtherAcc::where('username', $username)->first()->id;
-        //get the user's data
         
+        //get the user's data
         return view('otherAcc.otherAcc_page', ['username' => $username]);
     }
 

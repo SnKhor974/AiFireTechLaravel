@@ -31,6 +31,7 @@
                                 <a href="{{route('admin-login-page')}}" style="font-family: sans-serif;"><b>Admin</b></a>
                                 <a href="{{route('staff-login-page')}}" style="font-family: sans-serif;"><b>Staff</b></a>
                                 <a href="{{route('users-login-page')}}" style="font-family: sans-serif;"><b>User</b></a>
+                                <a href="{{route('otherAcc-login-page')}}" style="font-family: sans-serif;"><b>Others</b></a>
                             </div>
                         </div>
                 
