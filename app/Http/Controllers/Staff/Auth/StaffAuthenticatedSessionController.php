@@ -59,10 +59,10 @@ class StaffAuthenticatedSessionController extends Controller
         //get name list
         $name_list = json_encode(Users::where('staff_id_in_charge', $staff_id)->pluck('username')->toArray());
 
-        //get area list
-        $area_list = json_encode(Areas::pluck('area_name')->toArray());
+        //get area list for autocomplete
+        $area_list_autocomplete = json_encode(Areas::pluck('area_name')->toArray());
 
-        return view('staff.staff_page', ['username' => $username, 'user_list' => $user_list, 'name_list' => $name_list, 'area_list' => $area_list]);
+        return view('staff.staff_page', ['username' => $username, 'user_list' => $user_list, 'name_list' => $name_list, 'area_list_autocomplete' => $area_list_autocomplete]);
     }
 
     /**
@@ -84,7 +84,11 @@ class StaffAuthenticatedSessionController extends Controller
 
         //find the fe list of user 
         $fe_list = FE::where('fe_user_id', $data['id'])->get();
-        return view('staff.staff_view_user', ['user_details' => $user_details, 'fe_list' => $fe_list]);
+
+        //get area and staff list for autocomplete
+        $area_list_autocomplete = json_encode(Areas::pluck('area_name')->toArray());
+
+        return view('staff.staff_view_user', ['user_details' => $user_details, 'fe_list' => $fe_list, 'area_list_autocomplete' => $area_list_autocomplete]);
     }
 
     /**

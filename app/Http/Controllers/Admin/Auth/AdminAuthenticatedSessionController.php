@@ -10,6 +10,8 @@ use App\Models\Staff;
 use App\Models\Users;
 use App\Models\Areas;
 use App\Models\FeBrands;
+use App\Models\OtherAcc;
+use App\Models\AreaInCharge;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -56,6 +58,9 @@ class AdminAuthenticatedSessionController extends Controller
         //get all users
         $user_list = Users::all();
 
+        //get all area names and area id
+        $area_list = Areas::orderBy('area_name', 'asc')->get();
+
         //get all staff
         $staff_list = Staff::all();
 
@@ -66,8 +71,9 @@ class AdminAuthenticatedSessionController extends Controller
         $area_list_autocomplete = json_encode(Areas::pluck('area_name')->toArray());
         $staff_list_autocomplete = json_encode(Staff::pluck('username')->toArray());
 
-
-        return view('admin.admin_page', ['username' => $username, 'user_list' => $user_list, 'name_list' => $name_list, 'area_list_autocomplete' => $area_list_autocomplete, 'staff_list' => $staff_list, 'staff_list_autocomplete' => $staff_list_autocomplete]);
+        $alphanumeric = str_split('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+        
+        return view('admin.admin_page', ['username' => $username, 'user_list' => $user_list, 'name_list' => $name_list, 'area_list_autocomplete' => $area_list_autocomplete, 'staff_list' => $staff_list, 'staff_list_autocomplete' => $staff_list_autocomplete, 'area_list' => $area_list, 'alphanumeric' => $alphanumeric]);
     }
 
     /**
@@ -91,9 +97,13 @@ class AdminAuthenticatedSessionController extends Controller
         $staff_name = Staff::find($staff_id)->username; 
         //find the fe list of user 
         $fe_list = FE::where('fe_user_id', $data['id'])->get();
-        return view('admin.admin_view_user', ['user_details' => $user_details, 'fe_list' => $fe_list, 'staff_name' => $staff_name]);
-        
 
+        //get area and staff list for autocomplete
+        $area_list_autocomplete = json_encode(Areas::pluck('area_name')->toArray());
+        $staff_list_autocomplete = json_encode(Staff::pluck('username')->toArray());
+
+        return view('admin.admin_view_user', ['user_details' => $user_details, 'fe_list' => $fe_list, 'staff_name' => $staff_name, 'area_list_autocomplete' => $area_list_autocomplete, 'staff_list_autocomplete' => $staff_list_autocomplete]);
+        
     }
 
     /**
@@ -135,6 +145,26 @@ class AdminAuthenticatedSessionController extends Controller
             ]);
     
             $user->save();
+        }
+        if ($data['role'] == 'other'){
+            
+            $selectedAreas = $request->input('areas');
+            
+            
+            $user = OtherAcc::create([
+                'username' => $data['username'],
+                'password' => $data['password'],
+            ]);
+    
+            $user->save();
+
+            $newUserId = $user->id;
+            foreach ($selectedAreas as $area) {
+                AreaInCharge::create([
+                    'user_id' => $newUserId,
+                    'area_id' => $area,
+                ]);
+            }
         }
         return redirect()->intended(route('admin-page'))->with('success', 'Registration Successful');
     }

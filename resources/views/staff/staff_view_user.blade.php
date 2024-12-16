@@ -4,6 +4,7 @@
     <title>Viewing User</title>
     <link rel="icon" type="image/png" href="{{ asset('img/aifiretechlogo.png')}}">
     <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/autocomplete.css') }}">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/sakura.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -238,4 +239,64 @@ function fetchUserData(userId) {
     });
 });
 });
+
+// Autocomplete functionality
+const areaNames = <?php echo $area_list_autocomplete; ?>;
+
+setupAutocomplete("#editArea", areaNames);
+
+function setupAutocomplete(inputSelector, dataArray) {
+    const inputE1 = document.querySelector(inputSelector);
+
+    inputE1.addEventListener("input", function() {
+        onInputChange(inputE1, dataArray);
+    });
+
+    function onInputChange(inputE1, dataArray) {
+        removeAutocompleteDropdown(inputE1);
+
+        const value = inputE1.value;
+
+        if (value.length === 0) return;
+
+        const filteredNames = dataArray.filter(name => 
+            name.substr(0, value.length).toLowerCase() === value.toLowerCase()
+        );
+
+        createAutocompleteDropdown(filteredNames, inputE1);
+    }
+
+    function createAutocompleteDropdown(list, inputE1) {
+        const listE1 = document.createElement("ul");
+        listE1.className = "autocomplete-list";
+        listE1.id = "autocomplete-list";
+
+        list.forEach(name => {
+            const listItem = document.createElement("li");
+            const nameButton = document.createElement("button");
+            nameButton.innerHTML = name;
+            nameButton.addEventListener("click", function(e) {
+                onNameButtonClick(e, inputE1);
+            });
+            listItem.appendChild(nameButton);
+
+            listE1.appendChild(listItem);
+        });
+
+        inputE1.parentNode.appendChild(listE1);
+    }
+
+    function removeAutocompleteDropdown(inputE1) {
+        const listE1 = inputE1.parentNode.querySelector(".autocomplete-list");
+        if (listE1) listE1.remove();
+    }
+
+    function onNameButtonClick(e, inputE1) {
+        e.preventDefault();
+        const buttonE1 = e.target;
+        inputE1.value = buttonE1.innerHTML;
+
+        removeAutocompleteDropdown(inputE1);
+    }
+}
 </script>

@@ -302,11 +302,9 @@ $(document).ready(function() {
 });
 
 // Autocomplete functionality
-const profileNames = <?php echo $name_list; ?>;
-const areaNames = <?php echo $area_list; ?>;
+const areaNames = <?php echo $area_list_autocomplete; ?>;
 
-setupAutocomplete("#search_name", profileNames);
-setupAutocomplete("#search_area", areaNames);
+setupAutocomplete("#editArea", areaNames);
 
 function setupAutocomplete(inputSelector, dataArray) {
     const inputE1 = document.querySelector(inputSelector);

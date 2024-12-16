@@ -5,6 +5,7 @@
     <link rel="icon" type="image/png" href="{{ asset('img/aifiretechlogo.png')}}">
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/autocomplete.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/checkbox.css') }}">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/sakura.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -73,6 +74,7 @@
                     <option value="admin">Admin</option>
                     <option value="staff">Staff</option>
                     <option value="user">User</option>
+                    <option value="other">Others</option>
                 </select>
             </div>
             <div class="form-group">
@@ -112,6 +114,38 @@
                     </div>
                 </div>
             </div>
+
+            <div id="otherDiv" style="display: none;">
+                <label>Area in Charge:</label>
+
+                @php
+                    $prev_char = 'none';
+                @endphp
+
+                @foreach($area_list as $area)
+                    @php
+                        $header = false;
+                    @endphp
+
+                    @foreach($alphanumeric as $char)
+                        @if($char == $area->area_name[0] && $char != $prev_char)
+                            @if (!$header)
+                                <h3 style="margin-top: unset">{{ $char }}</h3>
+                                @php
+                                    $header = true;
+                                    $prev_char = $char;
+                                @endphp
+                            @endif
+                        @endif
+                    @endforeach
+
+                    <div class="group">
+                        <input type="checkbox" id="{{ $area->area_id }}" name="areas[]" value="{{ $area->area_id }}">
+                        <label for="{{ $area->area_id }}">{{ $area->area_name }}</label>         
+                    </div>
+                @endforeach                  
+            </div>
+
             <button type="submit">Register</button>
         </form>
       </div>
@@ -388,10 +422,16 @@ function setupAutocomplete(inputSelector, dataArray) {
 function toggleUserDiv() {
     const role = document.getElementById('role').value;
     const userDiv = document.getElementById('userDiv');
+    const otherDiv = document.getElementById('otherDiv');
 
     if (role === 'user') {
+        otherDiv.style.display = 'none';
         userDiv.style.display = 'block'; // Show the div
+    } else if (role === 'other') {
+        userDiv.style.display = 'none';
+        otherDiv.style.display = 'block'; // Show the div
     } else {
+        otherDiv.style.display = 'none';
         userDiv.style.display = 'none'; // Hide the div
     }
 }
