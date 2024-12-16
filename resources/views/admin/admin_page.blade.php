@@ -9,9 +9,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/sakura.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
-  
 
-    
 </head>
 <body>
     <div class="container" >
@@ -310,7 +308,7 @@ $(document).ready(function() {
                 $('#editUserId').val(response.id);
                 $('#editUsername').val(response.username);
                 $('#editArea').val(response.area);
-                $('#editStaffInCharge').val(response.staff_in_charge);
+                $('#editStaffInCharge').val(response.staff_id_in_charge);
 
                 // Open the modal
                 $('#editUserModal').modal('show');

@@ -28,12 +28,11 @@ body, html {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
-.section-left{
+.section-left {
     flex: 1;
-    
 }
 
-.section-right{
+.section-right {
     flex: 1;
 }
 
@@ -143,7 +142,6 @@ body, html {
     cursor: pointer;
     transition: background-color 0.3s;
     display: block;
-    
     letter-spacing: 1px;
 }
 
@@ -163,4 +161,62 @@ body, html {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+}
+
+@media (max-width: 768px) {
+    .menu {
+        margin-top: 0;
+    }
+    .aifiretechlogo {
+        display: block;
+    }
+    .background-image{
+        min-width: 100vh;
+    }
+    .transparent-box {
+        display: block;
+    }
+    .section-left {
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically */
+    }
+    .aifiretechlogo {
+        margin: 0 auto; /* Center horizontally */
+        display: block;
+    }
+    .title h1 {
+        font-size: 4rem;
+    }
+    .title p{
+        font-size: 3rem;
+    }
+    .button {
+        font-size: 2.5rem;
+        width: 500px;
+        padding: 40px 60px;
+        margin-top: 60px;
+    }
+    .menu-hr {
+        margin-top: 60px;
+        width: 80%;
+    }
+    .title-hr {
+        width: 80%;
+    }
+    .dropdown button{
+        width: 500px;
+        padding: 40px 60px;
+        font-size: 2.5rem;
+    }
+    .dropdown .content{
+        min-width: 500px;
+        font-size: 2.5rem;
+    }
+    .social-media{
+        font-size: 2rem;
+    }
+    .social-media-link input {
+        transform: scale(2.5);
+        margin: 60px;
+    }
 }

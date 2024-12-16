@@ -24,23 +24,13 @@
                                     <label style="color: red;">{{ session('admin_login_error') }}</label>
                                 @endif
 
-                                <div class="input-box" style="position: relative;">
-                                    <input type="text" name="username" id="username" placeholder="Username" required>
-                                       
-                                    <img src="{{ asset('img/profileicon.png') }}" alt="Profile Icon">
-                                </div>
-
-                                <div class="input-box" style="position: relative;">
-                                    <input type="password" name="password" id="password" placeholder="Password" required>
-
-                                    <img src="{{ asset('img/passwordicon.png') }}" alt="Password Icon">
-                                        
-                                </div>
+                                <input type="text" name="username" id="username" placeholder="Username" required>
+                                <input type="password" name="password" id="password" placeholder="Password" required>                               
 
                                 <div class="action-button">
-                                    <a href="/" class="backbutton">Back</a>
+                                    <a href="/" class="optionbutton">Back</a>
 
-                                    <button class="loginbutton">Login</button>
+                                    <button class="optionbutton">Login</button>
                                 </div>
                                 
                             </form>
@@ -51,9 +41,6 @@
                             </div>
                             <div class="options">
                                 <img src="{{asset('img/questionmark.png')}}"><a href="#">Forgot Username/Password?</a>
-                            </div>
-                            <div class="options">
-                                <img src="{{asset('img/questionmark.png')}}"><a href="#">Reset Account</a>
                             </div>
                             <div class="options">
                                 <img src="{{asset('img/questionmark.png')}}"><a href="#">Other Login Problems</a>
