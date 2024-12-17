@@ -13,6 +13,24 @@
 </head>
 <body>
     <div class="container">
+        @if ($errors->any())
+            <div id="error-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                @foreach ($errors->all() as $error)
+                    {{ $error }}
+                @endforeach
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <script>
+                // Automatically dismiss the alert after 5 seconds
+                setTimeout(function() {
+                    $('#error-alert').alert('close');
+                }, 5000); // 5000 ms = 5 seconds
+            </script>
+            </div>
+        @endif
         @if (session('success'))
             <div id="success-alert" class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
@@ -28,7 +46,7 @@
                 }, 5000); // 5000 ms = 5 seconds
             </script>
         @endif
-        <img src="{{ asset('img/Screenshot 2024-07-15 203702.png') }}" alt="AiFireTechnology" width=100%>
+        <img src="{{ asset('img/Screenshot 2024-07-15 203702.png') }}" alt="AiFireTechnology" width="70%" style="display: block; margin-left: auto; margin-right: auto;">
         <h1>Logged in as Staff - {{$username}}</h1>
         <button type="button" data-toggle="modal" data-target="#regModal">
             Register new account
@@ -172,6 +190,7 @@ $(document).ready(function() {
         ordering: true,
         lengthChange: false,
         responsive: true,
+        pageLength: 20,
         ajax: {
             url: "{{ route('staff-getUsersData') }}", // Update with your route
             type: "POST", // Use POST method

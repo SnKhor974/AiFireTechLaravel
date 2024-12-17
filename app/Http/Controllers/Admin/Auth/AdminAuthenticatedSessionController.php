@@ -111,23 +111,42 @@ class AdminAuthenticatedSessionController extends Controller
         // dd($data);
 
         if($data['role'] == 'admin'){
+            $exists = Admin::where('username', $data['username'])->exists();
+
+            if ($exists) {
+                // If the username exists, redirect back with an error message
+                return redirect()->back()->withErrors(['username' => 'Error: The username already exists.']);
+            }
+            
             $user = Admin::create([
                 'username' => $data['username'],
                 'password' => $data['password'],
             ]);
 
-            $user->save();
         }
         
         if($data['role'] == 'staff'){
+            $exists = Staff::where('username', $data['username'])->exists();
+
+            if ($exists) {
+                // If the username exists, redirect back with an error message
+                return redirect()->back()->withErrors(['username' => 'Error: The username already exists.']);
+            }
+
             $user = Staff::create([
                 'username' => $data['username'],
                 'password' => $data['password'],
             ]);
-    
-            $user->save();
+
         }
         if($data['role'] == 'user'){
+            $exists = Users::where('username', $data['username'])->exists();
+
+            if ($exists) {
+                // If the username exists, redirect back with an error message
+                return redirect()->back()->withErrors(['username' => 'Error: The username already exists.']);
+            }
+
             $user = Users::create([
                 'username' => $data['username'],
                 'password' => $data['password'],
@@ -140,19 +159,21 @@ class AdminAuthenticatedSessionController extends Controller
                 'staff_id_in_charge' => 0
             ]);
     
-            $user->save();
         }
         if ($data['role'] == 'other'){
-            
+            $exists = OtherAcc::where('username', $data['username'])->exists();
+
+            if ($exists) {
+                // If the username exists, redirect back with an error message
+                return redirect()->back()->withErrors(['username' => 'Error: The username already exists.']);
+            }
+
             $selectedAreas = $request->input('areas');
-            
             
             $user = OtherAcc::create([
                 'username' => $data['username'],
                 'password' => $data['password'],
             ]);
-    
-            $user->save();
 
             $newUserId = $user->id;
             foreach ($selectedAreas as $area) {
@@ -179,7 +200,7 @@ class AdminAuthenticatedSessionController extends Controller
 
         // Check if the serial number matches the pattern
         if (!preg_match($pattern, $fe_serial_number)) {
-            return redirect()->back()->withErrors(['serial_number' => 'The serial number format is invalid.']);
+            return redirect()->back()->withErrors(['serial_number' => 'Error: Invalid serial number format.']);
         }
 
         // Check if the serial number already exists in the database
@@ -187,7 +208,7 @@ class AdminAuthenticatedSessionController extends Controller
 
         if ($exists) {
             // If the serial number exists, redirect back with an error message
-            return redirect()->back()->withErrors(['serial_number' => 'The serial number already exists.']);
+            return redirect()->back()->withErrors(['serial_number' => 'Error: Serial number already exists.']);
         }
 
         $fe_exp_date = $fe_exp_date = str_replace('-', '/', $data['expiry_date']);;

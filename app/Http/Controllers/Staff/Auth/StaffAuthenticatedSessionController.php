@@ -91,6 +91,13 @@ class StaffAuthenticatedSessionController extends Controller
     public function storeReg(Request $request): RedirectResponse
     {
         $data = $request->all();
+
+        $exists = Users::where('username', $data['username'])->exists();
+
+        if ($exists) {
+            // If the username exists, redirect back with an error message
+            return redirect()->back()->withErrors(['username' => 'Error: The username already exists.']);
+        }
         // dd($data);
         $user = Users::create([
             'username' => $data['username'],

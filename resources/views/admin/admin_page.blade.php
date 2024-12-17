@@ -14,6 +14,24 @@
 </head>
 <body>
     <div class="container" >
+        @if ($errors->any())
+            <div id="error-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                @foreach ($errors->all() as $error)
+                    {{ $error }}
+                @endforeach
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <script>
+                // Automatically dismiss the alert after 5 seconds
+                setTimeout(function() {
+                    $('#error-alert').alert('close');
+                }, 5000); // 5000 ms = 5 seconds
+            </script>
+            </div>
+        @endif
         @if (session('success'))
             <div id="success-alert" class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
@@ -29,7 +47,7 @@
                 }, 5000); // 5000 ms = 5 seconds
             </script>
         @endif
-        <img src="{{ asset('img/Screenshot 2024-07-15 203702.png') }}" alt="AiFireTechnology" width=100%>
+        <img src="{{ asset('img/Screenshot 2024-07-15 203702.png') }}" alt="AiFireTechnology" width="70%" style="display: block; margin-left: auto; margin-right: auto;">
         <h1>Logged in as Admin - {{$username}}</h1>
         <button type="button" data-toggle="modal" data-target="#regModal">
             Register new account
@@ -89,28 +107,28 @@
             <div id="userDiv" style="display: none;">
                 <div class="form-group">
                     <label for="company_name">Company name:</label>
-                    <input type="text" id="company_name" name="company_name" required>
+                    <input type="text" id="company_name" name="company_name">
                 </div>
                 <div class="form-group">
                     <label for="company_address">Company address:</label>
-                    <input type="text" id="company_address" name="company_address" required>
+                    <input type="text" id="company_address" name="company_address">
                 </div>
                 <div class="form-group">
                     <label for="person_in_charge">Person in charge:</label>
-                    <input type="text" id="person_in_charge" name="person_in_charge" required>
+                    <input type="text" id="person_in_charge" name="person_in_charge">
                 </div>
                 <div class="form-group">
                     <label for="contact">Contact:</label>
-                    <input type="text" id="contact" name="contact" required>
+                    <input type="text" id="contact" name="contact">
                 </div>
                 <div class="form-group">
                     <label for="email">Email:</label>
-                    <input type="text"  id="email" name="email" required>
+                    <input type="text"  id="email" name="email">
                 </div>
                 <div class="form-group">
                     <label for="search_area">Area:</label>
                     <div class="autocomplete-wrapper" id="autocomplete-wrapper">
-                        <input type="text" name="area" id="area" required>
+                        <input type="text" name="area" id="area">
                     </div>
                 </div>
             </div>
@@ -225,6 +243,7 @@ $(document).ready(function() {
         ordering: true,
         lengthChange: false,
         responsive: true,
+        pageLength: 20,
         ajax: {
             url: "{{ route('admin-getUsersData') }}", // Update with your route
             type: "POST", // Use POST method
@@ -428,13 +447,16 @@ function toggleUserDiv() {
 
     if (role === 'user') {
         otherDiv.style.display = 'none';
-        userDiv.style.display = 'block'; // Show the div
+        userDiv.style.display = 'block'; // Show the user div
+        $('#userDiv input').attr('required', true);
     } else if (role === 'other') {
         userDiv.style.display = 'none';
-        otherDiv.style.display = 'block'; // Show the div
+        otherDiv.style.display = 'block'; // Show the other div
+        $('#userDiv input').attr('required', false);
     } else {
         otherDiv.style.display = 'none';
         userDiv.style.display = 'none'; // Hide the div
+        $('#userDiv input').attr('required', false);
     }
 }
 

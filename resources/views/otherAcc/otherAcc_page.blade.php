@@ -28,7 +28,7 @@
                 }, 5000); // 5000 ms = 5 seconds
             </script>
         @endif
-        <img src="{{ asset('img/Screenshot 2024-07-15 203702.png') }}" alt="AiFireTechnology" width=100%>
+        <img src="{{ asset('img/Screenshot 2024-07-15 203702.png') }}" alt="AiFireTechnology" width="70%" style="display: block; margin-left: auto; margin-right: auto;">
         <h1>Logged in as Others - {{$username}}</h1>
         
         <form id="otherAcc-logout-form" action="{{ route('otherAcc-logout') }}" method="POST" style="display: none;">
@@ -62,6 +62,7 @@ $(document).ready(function() {
         ordering: true,
         lengthChange: false,
         responsive: true,
+        pageLength: 20,
         ajax: {
             url: "{{ route('otherAcc-getUsersData') }}", // Update with your route
             type: "POST", // Use POST method
