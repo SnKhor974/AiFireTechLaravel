@@ -170,8 +170,8 @@ body, html {
         display: unset;
     }
     .main{
-        background-color: orangered;
-        border: 1px solid orangered;
+        background-color: orange;
+        border: 1px solid orange;
     }
     .menu {
         margin-top: 0;
