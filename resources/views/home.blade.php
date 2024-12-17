@@ -5,7 +5,7 @@
         <link rel="icon" type="image/png" href="{{ asset('img/aifiretechlogo.png')}}">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" type="text/css" href="css/home.css">
+        <link rel="stylesheet" type="text/css" href="{{ asset('css/home.css?id=1') }}">
     </head>
     <body>
         <div class="background-image" style="background-image: url('img/index-background.jpg');">
