@@ -29,8 +29,9 @@ class AdminAuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+
         $account_type = 'admin';
         return view('admin.admin_login', ['account_type' => $account_type]);
     }
@@ -135,7 +136,7 @@ class AdminAuthenticatedSessionController extends Controller
                 'person_in_charge' => $data['person_in_charge'],
                 'contact' => $data['contact'],
                 'email' => $data['email'],
-                'area' => $data['search_area'],
+                'area' => $data['area'],
                 'staff_id_in_charge' => 0
             ]);
     
@@ -171,7 +172,23 @@ class AdminAuthenticatedSessionController extends Controller
     {
         $data = $request->all();
         $fe_location = $data['location'];
-        $fe_serial_number = $data['serial_number'];
+        $fe_serial_number = strtoupper($data['serial_number']); // Convert to uppercase
+
+        // Define the serial number pattern
+        $pattern = '/^[A-Za-z]{2}[0-9]{6}[A-Za-z][0-9]{5}$/';
+
+        // Check if the serial number matches the pattern
+        if (!preg_match($pattern, $fe_serial_number)) {
+            return redirect()->back()->withErrors(['serial_number' => 'The serial number format is invalid.']);
+        }
+
+        // Check if the serial number already exists in the database
+        $exists = FE::where('fe_serial_number', $fe_serial_number)->exists();
+
+        if ($exists) {
+            // If the serial number exists, redirect back with an error message
+            return redirect()->back()->withErrors(['serial_number' => 'The serial number already exists.']);
+        }
 
         $fe_exp_date = $fe_exp_date = str_replace('-', '/', $data['expiry_date']);;
 
@@ -210,7 +227,7 @@ class AdminAuthenticatedSessionController extends Controller
         ]);
         $fe->save();
 
-        return view('admin.admin_redirect', ['fe_user_id' => $fe_user_id]);
+        return redirect()->back()->with('success', 'Added New Fire Extinguisher.');
     }
 
     /**
@@ -366,9 +383,9 @@ class AdminAuthenticatedSessionController extends Controller
             'staff_in_charge' => 'required|string|max:255',
             'company_name' => 'required|string|max:255',
             'company_address' => 'required|string|max:255',
-            'person_in_charge' => 'string|max:255',
-            'contact' => 'string|max:255',
-            'email' => 'string|max:255'
+            'person_in_charge' => 'required|string|max:255',
+            'contact' => 'required|string|max:255',
+            'email' => 'required|string|max:255'
         ]);
 
         // Find the user

@@ -89,28 +89,28 @@
             <div id="userDiv" style="display: none;">
                 <div class="form-group">
                     <label for="company_name">Company name:</label>
-                    <input type="text" id="company_name" name="company_name">
+                    <input type="text" id="company_name" name="company_name" required>
                 </div>
                 <div class="form-group">
                     <label for="company_address">Company address:</label>
-                    <input type="text" id="company_address" name="company_address">
+                    <input type="text" id="company_address" name="company_address" required>
                 </div>
                 <div class="form-group">
                     <label for="person_in_charge">Person in charge:</label>
-                    <input type="text" id="person_in_charge" name="person_in_charge">
+                    <input type="text" id="person_in_charge" name="person_in_charge" required>
                 </div>
                 <div class="form-group">
                     <label for="contact">Contact:</label>
-                    <input type="text" id="contact" name="contact">
+                    <input type="text" id="contact" name="contact" required>
                 </div>
                 <div class="form-group">
                     <label for="email">Email:</label>
-                    <input type="text"  id="email" name="email">
+                    <input type="text"  id="email" name="email" required>
                 </div>
                 <div class="form-group">
                     <label for="search_area">Area:</label>
                     <div class="autocomplete-wrapper" id="autocomplete-wrapper">
-                        <input type="text" name="search_area" id="search_area">
+                        <input type="text" name="area" id="area" required>
                     </div>
                 </div>
             </div>
@@ -360,9 +360,11 @@ $(document).ready(function() {
 // Autocomplete functionality
 const areaNames = <?php echo $area_list_autocomplete; ?>;
 const staffNames = <?php echo $staff_list_autocomplete; ?>;
+const areaNamesReg = <?php echo $area_list_autocomplete; ?>;
 
 setupAutocomplete("#editArea", areaNames);
 setupAutocomplete("#editStaffInCharge", staffNames);
+setupAutocomplete("#area", areaNamesReg);
 
 function setupAutocomplete(inputSelector, dataArray) {
     const inputE1 = document.querySelector(inputSelector);

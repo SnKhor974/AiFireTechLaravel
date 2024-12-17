@@ -27,8 +27,9 @@ class StaffAuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+       
         $account_type = 'staff';
         return view('staff.staff_login', ['account_type' => $account_type]);
     }
@@ -119,7 +120,23 @@ class StaffAuthenticatedSessionController extends Controller
     {
         $data = $request->all();
         $fe_location = $data['location'];
-        $fe_serial_number = $data['serial_number'];
+        $fe_serial_number = strtoupper($data['serial_number']); // Convert to uppercase
+
+        // Define the serial number pattern
+        $pattern = '/^[A-Za-z]{2}[0-9]{6}[A-Za-z][0-9]{5}$/';
+
+        // Check if the serial number matches the pattern
+        if (!preg_match($pattern, $fe_serial_number)) {
+            return redirect()->back()->withErrors(['serial_number' => 'The serial number format is invalid.']);
+        }
+
+        // Check if the serial number already exists in the database
+        $exists = FE::where('fe_serial_number', $fe_serial_number)->exists();
+
+        if ($exists) {
+            // If the serial number exists, redirect back with an error message
+            return redirect()->back()->withErrors(['serial_number' => 'The serial number already exists.']);
+        }
 
         $fe_exp_date = $fe_exp_date = str_replace('-', '/', $data['expiry_date']);;
 
@@ -145,7 +162,6 @@ class StaffAuthenticatedSessionController extends Controller
         $fe_user_id = $data['user_id'];
         
         //dd($fe_location, $fe_serial_number, $fe_type, $fe_brand, $fe_man_date, $fe_exp_date, $fe_user_id);
-
         
         $fe = FE::create([
             'fe_location' => $fe_location,
@@ -158,7 +174,7 @@ class StaffAuthenticatedSessionController extends Controller
         ]);
         $fe->save();
 
-        return view('staff.staff_redirect', ['fe_user_id' => $fe_user_id]);
+        return redirect()->back()->with('success', 'Added New Fire Extinguisher.');
     }
 
     /**
@@ -311,9 +327,9 @@ class StaffAuthenticatedSessionController extends Controller
             'area' => 'required|string|max:255',
             'company_name' => 'required|string|max:255',
             'company_address' => 'required|string|max:255',
-            'person_in_charge' => 'string|max:255',
-            'contact' => 'string|max:255',
-            'email' => 'string|max:255'
+            'person_in_charge' => 'required|string|max:255',
+            'contact' => 'required|string|max:255',
+            'email' => 'required|string|max:255'
         ]);
 
         // Find the user

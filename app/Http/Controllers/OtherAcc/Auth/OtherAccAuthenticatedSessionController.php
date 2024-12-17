@@ -26,8 +26,9 @@ class OtherAccAuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+    
         $account_type = 'otherAcc';
         return view('otherAcc.otherAcc_login', ['account_type' => $account_type]);
     }

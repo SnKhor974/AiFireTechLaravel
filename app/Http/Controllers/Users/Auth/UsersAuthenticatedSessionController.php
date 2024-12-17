@@ -16,8 +16,9 @@ class UsersAuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+        
         $account_type = 'users';
         return view('users.users_login', ['account_type' => $account_type]);
     }
