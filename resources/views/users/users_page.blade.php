@@ -4,7 +4,7 @@
     <title>User</title>
     <link rel="icon" type="image/png" href="{{ asset('img/aifiretechlogo.png')}}">
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/sakura.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/sakura.css?id=1') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>

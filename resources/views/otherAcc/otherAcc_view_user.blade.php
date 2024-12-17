@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/autocomplete.css') }}">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/sakura.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/sakura.css?id=1') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
