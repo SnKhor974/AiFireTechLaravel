@@ -17,4 +17,12 @@ Route::prefix('otherAcc')->middleware('auth:otherAcc')->group(function () {
     Route::get('otherAcc-page', [OtherAccAuthenticatedSessionController::class, 'proceed'])->name('otherAcc-page');
 
     Route::post('logout', [OtherAccAuthenticatedSessionController::class, 'destroy'])->name('otherAcc-logout');
+
+    Route::get('view-user', [OtherAccAuthenticatedSessionController::class, 'viewUser'])->name('otherAcc-view-user');
+
+    Route::post('getUsersData', [OtherAccAuthenticatedSessionController::class, 'getUsersData'])->name('otherAcc-getUsersData');
+
+    Route::get('fetchUserData', [OtherAccAuthenticatedSessionController::class, 'fetchUserData'])->name('otherAcc-fetchUserData');
+
+    Route::get('generate-report', [OtherAccAuthenticatedSessionController::class, 'generateReport'])->name('otherAcc-generate-report');
 });

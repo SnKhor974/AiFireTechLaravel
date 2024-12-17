@@ -85,11 +85,6 @@ class AdminAuthenticatedSessionController extends Controller
         
         //find the user details by id
         $user_details = Users::find($data['id']);
-
-        //show error message if invalid id
-        if (!$user_details) {
-            return redirect()->back()->with('user_id_invalid', 'User not found.');
-        }
     
         //find the staff id in charge of user
         $staff_id = Staff::where('id', $user_details->staff_id_in_charge)->first()->id;

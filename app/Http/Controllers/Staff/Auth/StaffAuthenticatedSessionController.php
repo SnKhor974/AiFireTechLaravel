@@ -71,16 +71,9 @@ class StaffAuthenticatedSessionController extends Controller
     public function viewUser(Request $request)
     { 
         $data = $request->all();
-        //get the staff id
-        $staff_id = Staff::where('username', Auth::guard('staff')->user()->username)->first()->id;
 
         //find the user details by id
         $user_details = Users::find($data['id']);
-
-        //show error message if invalid id
-        if (!$user_details || $user_details->staff_id_in_charge != $staff_id) {
-            return redirect()->back()->with('user_id_invalid', 'User not found.');
-        }
 
         //find the fe list of user 
         $fe_list = FE::where('fe_user_id', $data['id'])->get();
