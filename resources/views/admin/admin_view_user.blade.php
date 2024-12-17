@@ -182,6 +182,10 @@
                         <input type="text" id="editUsername" name="username" required>
                     </div>
                     <div class="mb-3 form-group">
+                        <label for="editPassword">Password:</label>
+                        <input type="password" id="editPassword" name="password" placeholder="Leave blank to keep password." required>
+                    </div>
+                    <div class="mb-3 form-group">
                         <label for="search_area">Area:</label>
                         <div class="autocomplete-wrapper" id="autocomplete-wrapper">
                             <input type="text" name="area" id="editArea" required>

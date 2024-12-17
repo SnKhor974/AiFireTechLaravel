@@ -12,6 +12,7 @@ use App\Models\FeBrands;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -331,6 +332,7 @@ class StaffAuthenticatedSessionController extends Controller
         $request->validate([
             'id' => 'required|exists:users,id',
             'username' => 'required|string|max:255',
+            'password' => 'nullable|string|max:255',
             'area' => 'required|string|max:255',
             'company_name' => 'required|string|max:255',
             'company_address' => 'required|string|max:255',
@@ -339,12 +341,20 @@ class StaffAuthenticatedSessionController extends Controller
             'email' => 'required|string|max:255'
         ]);
 
-        // Find the user
-        $user = Users::findOrFail($request->id);
-
-        $user->update($request->only(['username', 'area', 'company_name', 'company_address', 'person_in_charge', 'contact', 'email']));
-        
-        return response()->json(['message' => 'User updated successfully!']);
+        $user = Users::find($request->id);
+    
+        // Prepare the data for updating
+        $data = $request->only(['username', 'area', 'company_name', 'company_address', 'person_in_charge', 'contact', 'email']);
+    
+        // Check if the password is provided and hash it
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+    
+        // Update the user with the prepared data
+        $user->update($data);
+    
+        return redirect()->back()->with('success', 'User updated successfully!');
     }
 
 }

@@ -190,6 +190,10 @@
                         <input type="text" id="editUsername" name="username" required>
                     </div>
                     <div class="mb-3 form-group">
+                        <label for="editPassword">Password:</label>
+                        <input type="password" id="editPassword" name="password" placeholder="Leave blank to keep password." required>
+                    </div>
+                    <div class="mb-3 form-group">
                         <label for="search_area">Area:</label>
                         <div class="autocomplete-wrapper" id="autocomplete-wrapper">
                             <input type="text" name="area" id="editArea" required>
@@ -315,7 +319,7 @@ $(document).ready(function() {
                 $('#editPersonInCharge').val(response.person_in_charge);
                 $('#editContact').val(response.contact);
                 $('#editEmail').val(response.email);
-
+                
                 // Open the modal
                 $('#editUserModal').modal('show');
             },
