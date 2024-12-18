@@ -30,6 +30,8 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 
     Route::post('getUsersData', [AdminAuthenticatedSessionController::class, 'getUsersData'])->name('admin-getUsersData');
 
+    Route::post('getFeData', [AdminAuthenticatedSessionController::class, 'getFeData'])->name('admin-getFeData');
+
     Route::get('fetchUserData', [AdminAuthenticatedSessionController::class, 'fetchUserData'])->name('admin-fetchUserData');
 
     Route::post('update', [AdminAuthenticatedSessionController::class, 'update'])->name('admin-updateUserData');

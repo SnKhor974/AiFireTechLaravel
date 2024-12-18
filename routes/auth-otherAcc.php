@@ -22,6 +22,8 @@ Route::prefix('otherAcc')->middleware('auth:otherAcc')->group(function () {
 
     Route::post('getUsersData', [OtherAccAuthenticatedSessionController::class, 'getUsersData'])->name('otherAcc-getUsersData');
 
+    Route::post('getFeData', [OtherAccAuthenticatedSessionController::class, 'getFeData'])->name('otherAcc-getFeData');
+
     Route::get('fetchUserData', [OtherAccAuthenticatedSessionController::class, 'fetchUserData'])->name('otherAcc-fetchUserData');
 
     Route::get('generate-report', [OtherAccAuthenticatedSessionController::class, 'generateReport'])->name('otherAcc-generate-report');

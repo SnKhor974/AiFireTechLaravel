@@ -145,7 +145,7 @@
                     </div>
                     <div class="mb-3 form-group">
                         <label for="editPassword">Password:</label>
-                        <input type="password" id="editPassword" name="password" placeholder="Leave blank to keep password." required>
+                        <input type="password" id="editPassword" name="password" placeholder="Leave blank to keep password.">
                     </div>
                     <div class="mb-3 form-group">
                         <label for="search_area">Area:</label>
@@ -187,7 +187,6 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-    console.log($('#myTable'));
     $('#myTable').DataTable({
         paging: true,
         searching: true,

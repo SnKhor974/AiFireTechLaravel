@@ -28,6 +28,8 @@ Route::prefix('staff')->middleware('auth:staff')->group(function () {
 
     Route::post('getUsersData', [StaffAuthenticatedSessionController::class, 'getUsersData'])->name('staff-getUsersData');
 
+    Route::post('getFeData', [StaffAuthenticatedSessionController::class, 'getFeData'])->name('staff-getFeData');
+
     Route::get('fetchUserData', [StaffAuthenticatedSessionController::class, 'fetchUserData'])->name('staff-fetchUserData');
 
     Route::post('update', [StaffAuthenticatedSessionController::class, 'update'])->name('staff-updateUserData');

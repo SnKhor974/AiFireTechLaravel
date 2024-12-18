@@ -14,6 +14,7 @@ class FE extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'fe_id',
         'fe_location',
         'fe_serial_number',
         'fe_type',

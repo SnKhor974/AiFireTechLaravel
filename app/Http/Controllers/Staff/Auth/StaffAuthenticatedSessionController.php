@@ -131,7 +131,7 @@ class StaffAuthenticatedSessionController extends Controller
         $fe_serial_number = strtoupper($data['serial_number']); // Convert to uppercase
 
         // Define the serial number pattern
-        $pattern = '/^[A-Za-z]{2}[0-9]{6}[A-Za-z][0-9]{5}$/';
+        $pattern = '/^[A-Za-z]{2}[0-9]{6}[A-Za-z][0-9]{6}$/';
 
         // Check if the serial number matches the pattern
         if (!preg_match($pattern, $fe_serial_number)) {
@@ -272,7 +272,7 @@ class StaffAuthenticatedSessionController extends Controller
     public function getUsersData(Request $request)
     {   
         
-        
+
         //get the username of the authenticated user
         $username = Auth::guard('staff')->user()->username;
         //get id of staff
@@ -293,6 +293,29 @@ class StaffAuthenticatedSessionController extends Controller
         });
         // Return the data as a JSON response
         return response()->json(['data' => $data]);
+    }
+
+    public function getFeData(Request $request)
+    {   
+        $userId = $request->input('user_id');
+        //find the fe list of user 
+        $fe_list = FE::where('fe_user_id', $userId)->get();
+        // dd($user->staff);
+        // Map data to a structure that DataTable expects
+        $fe_data = $fe_list->map(function ($fe) {
+
+            return [
+                'fe_id' => $fe->fe_id,
+                'fe_location' => $fe->fe_location,
+                'fe_serial_number' => $fe->fe_serial_number,
+                'fe_type' => $fe->fe_type,
+                'fe_brand' => $fe->fe_brand,
+                'fe_man_date' => $fe->fe_man_date,
+                'fe_exp_date' => $fe->fe_exp_date,
+            ];
+        });
+        // Return the data as a JSON response
+        return response()->json(['fe_data' => $fe_data]);
     }
 
     public function deleteUser(Request $request)

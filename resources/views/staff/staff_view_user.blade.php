@@ -8,8 +8,10 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/sakura.css?id=1') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
 </head>
 <body>
+    <input type="hidden" id="userId" value="{{ $user_details->id }}">
     @if ($errors->any())
         <div id="error-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
             @foreach ($errors->all() as $error)
@@ -86,41 +88,21 @@
         Add Fire Extinguisher
     </button>
 
-    <table class="fe-table">
-        <tr>
-            <th>No.</th>
-            <th>F/E Location</th>
-            <th>F/E Serial Number</th>
-            <th>F/E Type</th>
-            <th>F/E Brand</th>
-            <th>F/E Man. Date</th>
-            <th>F/E Exp. Date</th>
-        </tr>
-
-        <?php
-        
-            $counter = 1;
-        
-        ?>
-
-        @foreach($fe_list as $fe)
+    <table id="myTable">
+        <thead>
             <tr>
-                <td>{{$counter}}</td>
-                <td>{{$fe->fe_location}}</td>
-                <td>{{$fe->fe_serial_number}}</td>
-                <td>{{$fe->fe_type}}</td>
-                <td>{{$fe->fe_brand}}</td>
-                <td>{{$fe->fe_man_date}}</td>
-                <td>{{$fe->fe_exp_date}}</td>
+                <th>No.</th>
+                <th>F/E Location</th>
+                <th>F/E Serial Number</th>
+                <th>F/E Type</th>
+                <th>F/E Brand</th>
+                <th>F/E Man. Date</th>
+                <th>F/E Exp. Date</th>
+                <th>Action</th>
             </tr>
-        <?php
-        
-            $counter++;
-        ?>
-        @endforeach
-
-        
+        </thead>
     </table>
+
 </body>
 </html>
 
@@ -180,7 +162,7 @@
                     </div>
                     <div class="mb-3 form-group">
                         <label for="editPassword">Password:</label>
-                        <input type="password" id="editPassword" name="password" placeholder="Leave blank to keep password." required>
+                        <input type="password" id="editPassword" name="password" placeholder="Leave blank to keep password.">
                     </div>
                     <div class="mb-3 form-group">
                         <label for="search_area">Area:</label>
@@ -223,58 +205,107 @@
 <script type="text/javascript">
 
 $(document).ready(function() {
-
-// Handle Edit button click
-$(document).on('click', '.edit-btn', function() {
-    var userId = $(this).data('id');
-    fetchUserData(userId);
-});
-
-// Fetch user data for editing
-function fetchUserData(userId) {
-    $.ajax({
-        url: "{{ route('staff-fetchUserData') }}?id=" + userId, // Fetch user data
-        type: "GET",
-        success: function(response) {
-            // Populate modal fields with user data
-            $('#editUserId').val(response.id);
-            $('#editUsername').val(response.username);
-            $('#editArea').val(response.area);
-            $('#editCompanyName').val(response.company_name);
-            $('#editCompanyAddress').val(response.company_address);
-            $('#editPersonInCharge').val(response.person_in_charge);
-            $('#editContact').val(response.contact);
-            $('#editEmail').val(response.email);
-
-            // Open the modal
-            $('#editUserModal').modal('show');
+    $('#myTable').DataTable({
+        paging: true,
+        searching: true,
+        ordering: true,
+        lengthChange: false,
+        responsive: true,
+        pageLength: 20,
+        ajax: {
+            url: "{{ route('staff-getFeData') }}", // Update with your route
+            type: "POST", // Use POST method
+            dataSrc: function (json) {
+                return json.fe_data; // Ensure that 'fe_data' is the key from your API
+            },
+            data: function(d) {
+                // Send additional data to the server (if needed)
+                return $.extend({}, d, {
+                    // Example: Add any additional parameters here
+                    _token: '{{ csrf_token() }}',  // CSRF token for security
+                    user_id: $('#userId').val()    // Send user ID
+                });
+            }
         },
-        error: function(xhr) {
-            alert("Error fetching user data!");
-        }
+        columns: [
+            { data: null,                  // No. column
+                render: function(data, type, row, meta) {
+                    return meta.row + 1;
+                }
+            },
+            { data: "fe_location" },       // F/E Location column
+            { data: "fe_serial_number" },  // F/E Serial Number column
+            { data: "fe_type" },           // F/E Type column
+            { data: "fe_brand" },          // F/E Brand column
+            { data: "fe_man_date" },       // F/E Man. Date column
+            { data: "fe_exp_date" },  
+            { data: null,                  // Action column
+                render: function(data, type, row) {
+                    return `
+                        <button class="btn btn-primary renew-fe-btn" data-id="${row.fe_id}" >Renew</button>
+                        <button class="btn btn-warning edit-fe-btn" data-id="${row.fe_id}">Edit</button>
+                        <button class="btn btn-danger delete-fe-btn" data-id="${row.fe_id}">Delete</button>
+                    `;
+                }
+            }
+        ],
+        columnDefs: [
+            { targets: [-1], searchable: false, orderable: false } // Disable sorting/searching for last column (Action column)
+        ],
+        order: [[0, 'asc']],
     });
-}
 
- // Handle form submission for saving changes
- $('#editUserForm').on('submit', function(e) {
-    e.preventDefault();
-
-    $.ajax({
-        url: "{{ route('staff-updateUserData') }}",// Update user data
-        type: "POST",
-        data: $(this).serialize(),
-        success: function(response) {
-            // Close the modal
-            $('#editUserModal').modal('hide');
-
-            alert("User updated successfully!");
-            location.reload();
-        },
-        error: function(xhr) {
-            alert("Error updating user!");
-        }
+    // Handle Edit button click
+    $(document).on('click', '.edit-btn', function() {
+        var userId = $(this).data('id');
+        fetchUserData(userId);
     });
-});
+
+    // Fetch user data for editing
+    function fetchUserData(userId) {
+        $.ajax({
+            url: "{{ route('staff-fetchUserData') }}?id=" + userId, // Fetch user data
+            type: "GET",
+            success: function(response) {
+                // Populate modal fields with user data
+                $('#editUserId').val(response.id);
+                $('#editUsername').val(response.username);
+                $('#editArea').val(response.area);
+                $('#editCompanyName').val(response.company_name);
+                $('#editCompanyAddress').val(response.company_address);
+                $('#editPersonInCharge').val(response.person_in_charge);
+                $('#editContact').val(response.contact);
+                $('#editEmail').val(response.email);
+
+                // Open the modal
+                $('#editUserModal').modal('show');
+            },
+            error: function(xhr) {
+                alert("Error fetching user data!");
+            }
+        });
+    }
+
+    // Handle form submission for saving changes
+    $('#editUserForm').on('submit', function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: "{{ route('staff-updateUserData') }}",// Update user data
+            type: "POST",
+            data: $(this).serialize(),
+            success: function(response) {
+                // Close the modal
+                $('#editUserModal').modal('hide');
+
+                alert("User updated successfully!");
+                location.reload();
+            },
+            error: function(xhr) {
+                alert("Error updating user!");
+            }
+        });
+    });
 });
 
 // Autocomplete functionality
@@ -337,3 +368,4 @@ function setupAutocomplete(inputSelector, dataArray) {
     }
 }
 </script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>

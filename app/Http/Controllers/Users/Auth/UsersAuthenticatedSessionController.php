@@ -50,6 +50,29 @@ class UsersAuthenticatedSessionController extends Controller
         return view('users.users_page', ['username' => $username, 'fe_list' => $fe_list, 'user_details' => $user_details]);
     }
 
+    public function getFeData(Request $request)
+    {   
+        $userId = $request->input('user_id');
+        //find the fe list of user 
+        $fe_list = FE::where('fe_user_id', $userId)->get();
+        // dd($user->staff);
+        // Map data to a structure that DataTable expects
+        $fe_data = $fe_list->map(function ($fe) {
+
+            return [
+                'fe_id' => $fe->fe_id,
+                'fe_location' => $fe->fe_location,
+                'fe_serial_number' => $fe->fe_serial_number,
+                'fe_type' => $fe->fe_type,
+                'fe_brand' => $fe->fe_brand,
+                'fe_man_date' => $fe->fe_man_date,
+                'fe_exp_date' => $fe->fe_exp_date,
+            ];
+        });
+        // Return the data as a JSON response
+        return response()->json(['fe_data' => $fe_data]);
+    }
+
     /**
      * Destroy an authenticated session.
      */

@@ -197,7 +197,7 @@ class AdminAuthenticatedSessionController extends Controller
         $fe_serial_number = strtoupper($data['serial_number']); // Convert to uppercase
 
         // Define the serial number pattern
-        $pattern = '/^[A-Za-z]{2}[0-9]{6}[A-Za-z][0-9]{5}$/';
+        $pattern = '/^[A-Za-z]{2}[0-9]{6}[A-Za-z][0-9]{6}$/';
 
         // Check if the serial number matches the pattern
         if (!preg_match($pattern, $fe_serial_number)) {
@@ -364,6 +364,29 @@ class AdminAuthenticatedSessionController extends Controller
         return response()->json(['data' => $data]);
     }
 
+    public function getFeData(Request $request)
+    {   
+        $userId = $request->input('user_id');
+        //find the fe list of user 
+        $fe_list = FE::where('fe_user_id', $userId)->get();
+        // dd($user->staff);
+        // Map data to a structure that DataTable expects
+        $fe_data = $fe_list->map(function ($fe) {
+
+            return [
+                'fe_id' => $fe->fe_id,
+                'fe_location' => $fe->fe_location,
+                'fe_serial_number' => $fe->fe_serial_number,
+                'fe_type' => $fe->fe_type,
+                'fe_brand' => $fe->fe_brand,
+                'fe_man_date' => $fe->fe_man_date,
+                'fe_exp_date' => $fe->fe_exp_date,
+            ];
+        });
+        // Return the data as a JSON response
+        return response()->json(['fe_data' => $fe_data]);
+    }
+
     public function deleteUser(Request $request)
     {
         $userId = $request->input('id');
@@ -410,6 +433,9 @@ class AdminAuthenticatedSessionController extends Controller
             'contact' => 'required|string|max:255',
             'email' => 'required|string|max:255'
         ]);
+
+        // Find the staff id using the staff name
+        $staff_id = Staff::where('username', $request->staff_in_charge)->first()->id;
     
         $user = Users::find($request->id);
     
@@ -420,6 +446,8 @@ class AdminAuthenticatedSessionController extends Controller
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
+        // Update the staff id in charge
+        $data['staff_id_in_charge'] = $staff_id;
     
         // Update the user with the prepared data
         $user->update($data);

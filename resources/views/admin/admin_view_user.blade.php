@@ -8,8 +8,10 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/sakura.css?id=1') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
 </head>
 <body>
+    <input type="hidden" id="userId" value="{{ $user_details->id }}">
     @if ($errors->any())
         <div id="error-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
             @foreach ($errors->all() as $error)
@@ -88,41 +90,20 @@
     <button type="button" data-toggle="modal" data-target="#addModal">
         Add Fire Extinguisher
     </button>
-    
-    <table class="fe-table">
-        <tr>
-            <th>No.</th>
-            <th>F/E Location</th>
-            <th>F/E Serial Number</th>
-            <th>F/E Type</th>
-            <th>F/E Brand</th>
-            <th>F/E Man. Date</th>
-            <th>F/E Exp. Date</th>
-        </tr>
 
-        <?php
-        
-            $counter = 1;
-        
-        ?>
-
-        @foreach($fe_list as $fe)
+    <table id="myTable">
+        <thead>
             <tr>
-                <td>{{$counter}}</td>
-                <td>{{$fe->fe_location}}</td>
-                <td>{{$fe->fe_serial_number}}</td>
-                <td>{{$fe->fe_type}}</td>
-                <td>{{$fe->fe_brand}}</td>
-                <td>{{$fe->fe_man_date}}</td>
-                <td>{{$fe->fe_exp_date}}</td>
+                <th>No.</th>
+                <th>F/E Location</th>
+                <th>F/E Serial Number</th>
+                <th>F/E Type</th>
+                <th>F/E Brand</th>
+                <th>F/E Man. Date</th>
+                <th>F/E Exp. Date</th>
+                <th>Action</th>
             </tr>
-        <?php
-        
-            $counter++;
-        ?>
-        @endforeach
-
-        
+        </thead>
     </table>
 </body>
 </html>
@@ -183,7 +164,70 @@
                     </div>
                     <div class="mb-3 form-group">
                         <label for="editPassword">Password:</label>
-                        <input type="password" id="editPassword" name="password" placeholder="Leave blank to keep password." required>
+                        <input type="password" id="editPassword" name="password" placeholder="Leave blank to keep password.">
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="search_area">Area:</label>
+                        <div class="autocomplete-wrapper" id="autocomplete-wrapper">
+                            <input type="text" name="area" id="editArea" required>
+                        </div>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editStaffInCharge">Staff in Charge:</label>
+                        <div class="autocomplete-wrapper" id="autocomplete-wrapper">
+                            <input type="text" id="editStaffInCharge" name="staff_in_charge" required>
+                        </div>
+                    </div>
+                    <h5>Account Details</h5>
+                    <div class="mb-3 form-group">
+                        <label for="editCompanyName">Company Name:</label>
+                        <input type="text" id="editCompanyName" name="company_name" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editCompanyAddress">Company Address:</label>
+                        <textarea id="editCompanyAddress" name="company_address" required></textarea>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editPersonInCharge">Person in Charge:</label>
+                        <input type="text" id="editPersonInCharge" name="person_in_charge" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editContact">Contact:</label>
+                        <input type="text" id="editContact" name="contact" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editEmail">Email:</label>
+                        <input type="text" id="editEmail" name="email" required>
+                    </div>
+
+                    <button type="submit" >Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit FE Modal -->
+<div class="modal fade" id="editFEModal" tabindex="-1" aria-labelledby="editFEModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editFEModalLabel">Edit User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editFEForm" autocomplete="off">
+                    @csrf
+                    <input type="hidden" id="editUserId" name="id">
+                    <div class="mb-3 form-group">
+                        <label for="editUsername">Username:</label>
+                        <input type="text" id="editUsername" name="username" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editPassword">Password:</label>
+                        <input type="password" id="editPassword" name="password" placeholder="Leave blank to keep password.">
                     </div>
                     <div class="mb-3 form-group">
                         <label for="search_area">Area:</label>
@@ -232,6 +276,74 @@
 <script type="text/javascript">
 
 $(document).ready(function() {
+    $('#myTable').DataTable({
+        paging: true,
+        searching: true,
+        ordering: true,
+        lengthChange: false,
+        responsive: true,
+        pageLength: 20,
+        ajax: {
+            url: "{{ route('admin-getFeData') }}", // Update with your route
+            type: "POST", // Use POST method
+            dataSrc: function (json) {
+                return json.fe_data; // Ensure that 'fe_data' is the key from your API
+            },
+            data: function(d) {
+                // Send additional data to the server (if needed)
+                return $.extend({}, d, {
+                    // Example: Add any additional parameters here
+                    _token: '{{ csrf_token() }}',  // CSRF token for security
+                    user_id: $('#userId').val()    // Send user ID
+                });
+            }
+        },
+        columns: [
+            { data: null,                  // No. column
+                render: function(data, type, row, meta) {
+                    return meta.row + 1;
+                }
+            },
+            { data: "fe_location" },       // F/E Location column
+            { data: "fe_serial_number" },  // F/E Serial Number column
+            { data: "fe_type" },           // F/E Type column
+            { data: "fe_brand" },          // F/E Brand column
+            { data: "fe_man_date" },       // F/E Man. Date column
+            { data: "fe_exp_date" },  
+            { data: null,                  // Action column
+                render: function(data, type, row) {
+                    return `
+                        <button class="btn btn-primary renew-fe-btn" data-id="${row.fe_id}" >Renew</button>
+                        <button class="btn btn-warning edit-fe-btn" data-id="${row.fe_id}">Edit</button>
+                        <button class="btn btn-danger delete-fe-btn" data-id="${row.fe_id}">Delete</button>
+                    `;
+                }
+            }
+        ],
+        columnDefs: [
+            { targets: [-1], searchable: false, orderable: false } // Disable sorting/searching for last column (Action column)
+        ],
+        order: [[0, 'asc']],
+    });
+
+    // Handle Renew FE button click
+    $(document).on('click', '.renew-fe-btn', function() {
+        var feId = $(this).data('id');
+        alert("Renew FE button clicked!" + feId);
+    });
+
+    // Handle Edit FE button click
+    $(document).on('click', '.edit-fe-btn', function() {
+        var feId = $(this).data('id');
+        alert("Edit FE button clicked!" + feId);
+    });
+
+    // Handle Delete FE button click
+    $(document).on('click', '.delete-fe-btn', function() {
+        var feId = $(this).data('id');
+        alert("Delete FE button clicked!" + feId);
+    });
+    
 
     // Handle Edit button click
     $(document).on('click', '.edit-btn', function() {
@@ -361,3 +473,4 @@ function toggleUserDiv() {
 }
 
 </script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>

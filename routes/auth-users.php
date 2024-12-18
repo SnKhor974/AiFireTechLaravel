@@ -17,4 +17,6 @@ Route::prefix('users')->middleware('auth:users')->group(function () {
     Route::get('users-page', [UsersAuthenticatedSessionController::class, 'proceed'])->name('users-page');
 
     Route::post('logout', [UsersAuthenticatedSessionController::class, 'destroy'])->name('users-logout');
+
+    Route::post('getFeData', [UsersAuthenticatedSessionController::class, 'getFeData'])->name('users-getFeData');
 });
