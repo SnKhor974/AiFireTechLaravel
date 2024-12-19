@@ -14,7 +14,7 @@ class FE extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'fe_id',
+        'id',
         'fe_location',
         'fe_serial_number',
         'fe_type',
@@ -22,5 +22,15 @@ class FE extends Model
         'fe_man_date',
         'fe_exp_date',
         'fe_user_id',
+        '1st_year',
+        '2nd_year',
+        '3rd_year',
+        '4th_year',
+        '5th_year',
+        '6th_year',
+        '7th_year',
+        '8th_year',
+        '9th_year',
+        '10th_year'
     ];
 }

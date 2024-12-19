@@ -34,8 +34,14 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 
     Route::get('fetchUserData', [AdminAuthenticatedSessionController::class, 'fetchUserData'])->name('admin-fetchUserData');
 
+    Route::get('fetchFeData', [AdminAuthenticatedSessionController::class, 'fetchFeData'])->name('admin-fetchFeData');
+
+    Route::post('updateFe', [AdminAuthenticatedSessionController::class, 'updateFe'])->name('admin-updateFeData');
+
     Route::post('update', [AdminAuthenticatedSessionController::class, 'update'])->name('admin-updateUserData');
 
     Route::post('delete-user', [AdminAuthenticatedSessionController::class, 'deleteUser'])->name('admin-deleteUserData');
+
+    Route::post('delete-fe', [AdminAuthenticatedSessionController::class, 'deleteFe'])->name('admin-deleteFeData');
     
 });

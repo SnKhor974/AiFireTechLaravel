@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Log; // Import the Log facade
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -374,7 +375,7 @@ class AdminAuthenticatedSessionController extends Controller
         $fe_data = $fe_list->map(function ($fe) {
 
             return [
-                'fe_id' => $fe->fe_id,
+                'id' => $fe->id,
                 'fe_location' => $fe->fe_location,
                 'fe_serial_number' => $fe->fe_serial_number,
                 'fe_type' => $fe->fe_type,
@@ -401,6 +402,20 @@ class AdminAuthenticatedSessionController extends Controller
         }
     }
 
+    public function deleteFe(Request $request)
+    {
+        $feId = $request->input('id');
+
+        // Find the fe and delete
+        $fe = FE::where('id', $feId)->first();
+        if ($fe) {
+            $fe->delete();
+            return response()->json(['success' => true]);
+        } else {
+            return response()->json(['success' => false]);
+        }
+    }
+
     // Fetch user data for editing
     public function fetchUserData(Request $request)
     {
@@ -416,6 +431,14 @@ class AdminAuthenticatedSessionController extends Controller
         $user['staff_in_charge'] = $staff_in_charge;
         
         return response()->json($user);
+    }
+
+    // Fetch fe data for editing
+    public function fetchFeData(Request $request)
+    {
+        $fe = FE::where('id', $request->id)->firstOrFail();
+        
+        return response()->json($fe);
     }
 
     // Update user data
@@ -453,5 +476,86 @@ class AdminAuthenticatedSessionController extends Controller
         $user->update($data);
     
         return redirect()->back()->with('success', 'User updated successfully!');
+    }
+
+    public function updateFe(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:fire_extinguisher,id',
+            'fe_serial_number' => 'required|string|max:255',
+            'fe_exp_date' => 'required|string|max:255',
+        ]);
+
+        $data = $request->all();
+
+        $fe_location = $data['fe_location'];
+        $fe_serial_number = strtoupper($data['fe_serial_number']); // Convert to uppercase
+
+        // Define the serial number pattern
+        $pattern = '/^[A-Za-z]{2}[0-9]{6}[A-Za-z][0-9]{6}$/';
+
+        // Check if the serial number matches the pattern
+        if (!preg_match($pattern, $fe_serial_number)) {
+            return redirect()->back()->withErrors(['fe_serial_number' => 'Error: Invalid serial number format.']);
+        }
+
+        // Check if the serial number already exists in the database (excluding the current record)
+        $exists = FE::where('fe_serial_number', $fe_serial_number)
+                    ->where('id', '!=', $data['id'])
+                    ->exists();
+
+        if ($exists) {
+            // If the serial number exists, redirect back with an error message
+            return redirect()->back()->withErrors(['fe_serial_number' => 'Error: Serial number already exists.']);
+        }
+
+        $fe_exp_date = str_replace('-', '/', $data['fe_exp_date']);
+
+        $fe_type = "UNKNOWN";
+
+        if ($fe_serial_number[8] === 'Y') {
+            $fe_type = "ABC";
+        } else if ($fe_serial_number[8] === 'Z') {
+            $fe_type = "CO2";
+        }
+
+        $brands = FeBrands::all();
+
+        $fe_brand = "UNKNOWN";
+
+        foreach ($brands as $brand) {
+            if (substr($fe_serial_number, 0, 2) === $brand->short) {
+                $fe_brand = $brand->name;
+            }
+        }
+
+        $fe_man_date = substr(substr($fe_serial_number, 2, 6), 0, 2) . '/' . substr(substr($fe_serial_number, 2, 6), 2);
+
+        // Find the FE record by 'id'
+        $fe = FE::where('id', $data['id'])->firstOrFail();
+
+        // Log the data being updated
+        Log::info('Updating FE record:', [
+            'fe_location' => $fe_location,
+            'fe_serial_number' => $fe_serial_number,
+            'fe_exp_date' => $fe_exp_date,
+            'fe_type' => $fe_type,
+            'fe_brand' => $fe_brand,
+            'fe_man_date' => $fe_man_date,
+    
+        ]);
+       
+        // Update the FE record
+        $fe->update([
+            'fe_location' => $fe_location,
+            'fe_serial_number' => $fe_serial_number,
+            'fe_exp_date' => $fe_exp_date,
+            'fe_type' => $fe_type,
+            'fe_brand' => $fe_brand,
+            'fe_man_date' => $fe_man_date,
+        ]);
+       
+
+        return redirect()->back()->with('success', 'Fire extinguisher updated successfully!');
     }
 }

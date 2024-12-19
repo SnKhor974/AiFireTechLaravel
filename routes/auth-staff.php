@@ -30,9 +30,15 @@ Route::prefix('staff')->middleware('auth:staff')->group(function () {
 
     Route::post('getFeData', [StaffAuthenticatedSessionController::class, 'getFeData'])->name('staff-getFeData');
 
+    Route::get('fetchFeData', [StaffAuthenticatedSessionController::class, 'fetchFeData'])->name('staff-fetchFeData');
+
     Route::get('fetchUserData', [StaffAuthenticatedSessionController::class, 'fetchUserData'])->name('staff-fetchUserData');
+
+    Route::post('updateFe', [StaffAuthenticatedSessionController::class, 'updateFe'])->name('staff-updateFeData');
 
     Route::post('update', [StaffAuthenticatedSessionController::class, 'update'])->name('staff-updateUserData');
 
     Route::post('delete-user', [StaffAuthenticatedSessionController::class, 'deleteUser'])->name('staff-deleteUserData');
+
+    Route::post('delete-fe', [StaffAuthenticatedSessionController::class, 'deleteFe'])->name('staff-deleteFeData');
 });

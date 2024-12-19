@@ -133,7 +133,7 @@ class OtherAccAuthenticatedSessionController extends Controller
         $fe_data = $fe_list->map(function ($fe) {
 
             return [
-                'fe_id' => $fe->fe_id,
+                'id' => $fe->id,
                 'fe_location' => $fe->fe_location,
                 'fe_serial_number' => $fe->fe_serial_number,
                 'fe_type' => $fe->fe_type,

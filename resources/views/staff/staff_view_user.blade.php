@@ -199,6 +199,39 @@
     </div>
 </div>
 
+<!-- Edit FE Modal -->
+<div class="modal fade" id="editFeModal" tabindex="-1" aria-labelledby="editFEModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editFeModalLabel">Edit fire extinguisher</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editFeForm" autocomplete="off">
+                    @csrf
+                    <input type="hidden" id="editFeId" name="id">
+                    <div class="mb-3 form-group">
+                        <label for="editFeLocation">Location:</label>
+                        <input type="text" id="editFeLocation" name="fe_location" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editFeSerialNumber">Serial Number:</label>
+                        <input type="text" id="editFeSerialNumber" name="fe_serial_number" required>
+                    </div>
+                    <div class="mb-3 form-group">
+                        <label for="editExpiryDate">Expiry Date:</label>
+                        <input type="text" id="editExpiryDate" name="fe_exp_date" required>
+                    </div>
+                    <button type="submit" >Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -242,9 +275,9 @@ $(document).ready(function() {
             { data: null,                  // Action column
                 render: function(data, type, row) {
                     return `
-                        <button class="btn btn-primary renew-fe-btn" data-id="${row.fe_id}" >Renew</button>
-                        <button class="btn btn-warning edit-fe-btn" data-id="${row.fe_id}">Edit</button>
-                        <button class="btn btn-danger delete-fe-btn" data-id="${row.fe_id}">Delete</button>
+                        <button class="btn btn-primary renew-fe-btn" data-id="${row.id}" >Renew</button>
+                        <button class="btn btn-warning edit-fe-btn" data-id="${row.id}">Edit</button>
+                        <button class="btn btn-danger delete-fe-btn" data-id="${row.id}">Delete</button>
                     `;
                 }
             }
@@ -253,6 +286,18 @@ $(document).ready(function() {
             { targets: [-1], searchable: false, orderable: false } // Disable sorting/searching for last column (Action column)
         ],
         order: [[0, 'asc']],
+    });
+
+    // Handle Edit FE button click
+    $(document).on('click', '.edit-fe-btn', function() {
+        var feId = $(this).data('id');
+        fetchFeData(feId);
+    });
+
+    // Handle Delete FE button click
+    $(document).on('click', '.delete-fe-btn', function() {
+        var feId = $(this).data('id');
+        deleteFe(feId);
     });
 
     // Handle Edit button click
@@ -306,6 +351,75 @@ $(document).ready(function() {
             }
         });
     });
+
+    // Fetch FE data for editing
+    function fetchFeData(feId) {
+        $.ajax({
+            url: "{{ route('staff-fetchFeData') }}?id=" + feId, // Fetch fe data
+            type: "GET",
+            success: function(response) {
+                // Populate modal fields with fe data
+                $('#editFeId').val(response.id);
+                $('#editFeLocation').val(response.fe_location);
+                $('#editFeSerialNumber').val(response.fe_serial_number);
+                $('#editExpiryDate').val(response.fe_exp_date);
+                
+                // Open the modal
+                $('#editFeModal').modal('show');
+            },
+            error: function(xhr) {
+                alert("Error fetching fire extinguisher data!");
+            }
+        });
+    }
+
+     // Handle form submission for saving changes
+     $('#editFeForm').on('submit', function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: "{{ route('staff-updateFeData') }}",// Update user data
+            type: "POST",
+            data: $(this).serialize(),
+            success: function(response) {
+                // Close the modal
+                $('#editFeModal').modal('hide');
+
+                // Refresh DataTable
+                $('#myTable').DataTable().ajax.reload(null, false);
+
+                alert("Fire extinguisher updated successfully!");
+            },
+            error: function(xhr) {
+                alert("Error updating fire extinguisher!");
+            }
+        });
+    });
+
+    // Function to delete fire extinguisher
+    function deleteFe(feId) {
+        if (confirm("Are you sure you want to delete this fire extinguisher?")) {
+            $.ajax({
+                url: "{{ route('staff-deleteFeData') }}",  // Your delete route
+                type: "POST",
+                data: {
+                    id: feId,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Fire extinguisher deleted successfully!');
+                        $('#myTable').DataTable().ajax.reload();  // Reload the table data
+                    } else {
+                        alert('Error deleting fire extinguisher!');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Something went wrong!');
+                }
+            });
+        }
+    }
 });
 
 // Autocomplete functionality

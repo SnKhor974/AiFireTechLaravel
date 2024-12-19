@@ -208,61 +208,31 @@
 </div>
 
 <!-- Edit FE Modal -->
-<div class="modal fade" id="editFEModal" tabindex="-1" aria-labelledby="editFEModalLabel" aria-hidden="true">
+<div class="modal fade" id="editFeModal" tabindex="-1" aria-labelledby="editFEModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editFEModalLabel">Edit User</h5>
+                <h5 class="modal-title" id="editFeModalLabel">Edit fire extinguisher</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="editFEForm" autocomplete="off">
+                <form id="editFeForm" autocomplete="off">
                     @csrf
-                    <input type="hidden" id="editUserId" name="id">
+                    <input type="hidden" id="editFeId" name="id">
                     <div class="mb-3 form-group">
-                        <label for="editUsername">Username:</label>
-                        <input type="text" id="editUsername" name="username" required>
+                        <label for="editFeLocation">Location:</label>
+                        <input type="text" id="editFeLocation" name="fe_location" required>
                     </div>
                     <div class="mb-3 form-group">
-                        <label for="editPassword">Password:</label>
-                        <input type="password" id="editPassword" name="password" placeholder="Leave blank to keep password.">
+                        <label for="editFeSerialNumber">Serial Number:</label>
+                        <input type="text" id="editFeSerialNumber" name="fe_serial_number" required>
                     </div>
                     <div class="mb-3 form-group">
-                        <label for="search_area">Area:</label>
-                        <div class="autocomplete-wrapper" id="autocomplete-wrapper">
-                            <input type="text" name="area" id="editArea" required>
-                        </div>
+                        <label for="editExpiryDate">Expiry Date:</label>
+                        <input type="text" id="editExpiryDate" name="fe_exp_date" required>
                     </div>
-                    <div class="mb-3 form-group">
-                        <label for="editStaffInCharge">Staff in Charge:</label>
-                        <div class="autocomplete-wrapper" id="autocomplete-wrapper">
-                            <input type="text" id="editStaffInCharge" name="staff_in_charge" required>
-                        </div>
-                    </div>
-                    <h5>Account Details</h5>
-                    <div class="mb-3 form-group">
-                        <label for="editCompanyName">Company Name:</label>
-                        <input type="text" id="editCompanyName" name="company_name" required>
-                    </div>
-                    <div class="mb-3 form-group">
-                        <label for="editCompanyAddress">Company Address:</label>
-                        <textarea id="editCompanyAddress" name="company_address" required></textarea>
-                    </div>
-                    <div class="mb-3 form-group">
-                        <label for="editPersonInCharge">Person in Charge:</label>
-                        <input type="text" id="editPersonInCharge" name="person_in_charge" required>
-                    </div>
-                    <div class="mb-3 form-group">
-                        <label for="editContact">Contact:</label>
-                        <input type="text" id="editContact" name="contact" required>
-                    </div>
-                    <div class="mb-3 form-group">
-                        <label for="editEmail">Email:</label>
-                        <input type="text" id="editEmail" name="email" required>
-                    </div>
-
                     <button type="submit" >Save Changes</button>
                 </form>
             </div>
@@ -313,9 +283,9 @@ $(document).ready(function() {
             { data: null,                  // Action column
                 render: function(data, type, row) {
                     return `
-                        <button class="btn btn-primary renew-fe-btn" data-id="${row.fe_id}" >Renew</button>
-                        <button class="btn btn-warning edit-fe-btn" data-id="${row.fe_id}">Edit</button>
-                        <button class="btn btn-danger delete-fe-btn" data-id="${row.fe_id}">Delete</button>
+                        <button class="btn btn-primary renew-fe-btn" data-id="${row.id}" >Renew</button>
+                        <button class="btn btn-warning edit-fe-btn" data-id="${row.id}">Edit</button>
+                        <button class="btn btn-danger delete-fe-btn" data-id="${row.id}">Delete</button>
                     `;
                 }
             }
@@ -335,13 +305,13 @@ $(document).ready(function() {
     // Handle Edit FE button click
     $(document).on('click', '.edit-fe-btn', function() {
         var feId = $(this).data('id');
-        alert("Edit FE button clicked!" + feId);
+        fetchFeData(feId);
     });
 
     // Handle Delete FE button click
     $(document).on('click', '.delete-fe-btn', function() {
         var feId = $(this).data('id');
-        alert("Delete FE button clicked!" + feId);
+        deleteFe(feId);
     });
     
 
@@ -397,6 +367,74 @@ $(document).ready(function() {
             }
         });
     });
+
+    // Fetch FE data for editing
+    function fetchFeData(feId) {
+        $.ajax({
+            url: "{{ route('admin-fetchFeData') }}?id=" + feId, // Fetch fe data
+            type: "GET",
+            success: function(response) {
+                // Populate modal fields with fe data
+                $('#editFeId').val(response.id);
+                $('#editFeLocation').val(response.fe_location);
+                $('#editFeSerialNumber').val(response.fe_serial_number);
+                $('#editExpiryDate').val(response.fe_exp_date);
+                
+                // Open the modal
+                $('#editFeModal').modal('show');
+            },
+            error: function(xhr) {
+                alert("Error fetching fire extinguisher data!");
+            }
+        });
+    }
+
+     // Handle form submission for saving changes
+     $('#editFeForm').on('submit', function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: "{{ route('admin-updateFeData') }}",// Update user data
+            type: "POST",
+            data: $(this).serialize(),
+            success: function(response) {
+                // Close the modal
+                $('#editFeModal').modal('hide');
+
+                // Refresh DataTable
+                $('#myTable').DataTable().ajax.reload(null, false);
+
+                alert("Fire extinguisher updated successfully!");
+            },
+            error: function(xhr) {
+                alert("Error updating fire extinguisher!");
+            }
+        });
+    });
+    // Function to delete fire extinguisher
+    function deleteFe(feId) {
+        if (confirm("Are you sure you want to delete this fire extinguisher?")) {
+            $.ajax({
+                url: "{{ route('admin-deleteFeData') }}",  // Your delete route
+                type: "POST",
+                data: {
+                    id: feId,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Fire extinguisher deleted successfully!');
+                        $('#myTable').DataTable().ajax.reload();  // Reload the table data
+                    } else {
+                        alert('Error deleting fire extinguisher!');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Something went wrong!');
+                }
+            });
+        }
+    }
 });
 
 // Autocomplete functionality
