@@ -240,6 +240,80 @@
     </div>
 </div>
 
+<!-- Renew FE Modal -->
+<div class="modal fade" id="renewFeModal" tabindex="-1" aria-labelledby="renewFEModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="renewFeModalLabel"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="renewFeForm" autocomplete="off">
+                    @csrf
+                    <input type="hidden" id="renewFeId" name="id">
+              
+                    <table class="table table-bordered mt-4">
+                        <thead>
+                            <tr>
+                                @php
+                                    $years = [
+                                        '1st_year',
+                                        '2nd_year',
+                                        '3rd_year',
+                                        '4th_year',
+                                        '5th_year',
+                                    ];
+                                @endphp
+
+                                @foreach ($years as $year)
+                                    <th id="{{ $year }}"></th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                @foreach ($years as $year)
+                                    <td id="{{ $year }}_renew_date"></td>
+                                @endforeach
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-bordered mt-3">
+                        <thead>
+                            <tr>
+                                @php
+                                    $years = [
+                                        '6th_year',
+                                        '7th_year',
+                                        '8th_year',
+                                        '9th_year',
+                                        '10th_year'
+                                    ];
+                                @endphp
+
+                                @foreach ($years as $year)
+                                    <th id="{{ $year }}"></th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                @foreach ($years as $year)
+                                    <td id="{{ $year }}_renew_date"></td>
+                                @endforeach
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -299,7 +373,7 @@ $(document).ready(function() {
     // Handle Renew FE button click
     $(document).on('click', '.renew-fe-btn', function() {
         var feId = $(this).data('id');
-        alert("Renew FE button clicked!" + feId);
+        fetchFeDataRenewal(feId);
     });
 
     // Handle Edit FE button click
@@ -394,7 +468,7 @@ $(document).ready(function() {
         e.preventDefault();
 
         $.ajax({
-            url: "{{ route('admin-updateFeData') }}",// Update user data
+            url: "{{ route('admin-updateFeData') }}",// Update fe data
             type: "POST",
             data: $(this).serialize(),
             success: function(response) {
@@ -411,6 +485,70 @@ $(document).ready(function() {
             }
         });
     });
+
+    // Fetch FE data for editing
+    function fetchFeDataRenewal(feId) {
+        $.ajax({
+            url: "{{ route('admin-fetchFeData') }}?id=" + feId, // Fetch fe data
+            type: "GET",
+            success: function(response) {
+                $('#renewFeModalLabel').text('Renewing expiry date for: ' + response.fe_serial_number);
+                let start_year = parseInt(response.fe_serial_number.substring(4, 8), 10);
+                let years = ['1st_year',
+                            '2nd_year',
+                            '3rd_year',
+                            '4th_year',
+                            '5th_year',
+                            '6th_year',
+                            '7th_year',
+                            '8th_year',
+                            '9th_year',
+                            '10th_year'];
+                years.forEach(function(year) {
+                    start_year++;
+                    $('#' + year).text(start_year);
+                    if (response[year] == null) {
+                        $('#' + year + '_renew_date').text('N/A').css('background-color', 'red');
+
+                    } else {
+                        $('#' + year + '_renew_date').text(response[year]).css('background-color', '#45F248');
+                    }           
+                });
+                
+                // Open the modal
+                $('#renewFeModal').modal('show');
+            },
+            error: function(xhr) {
+                alert("Error fetching fire extinguisher data!");
+            }
+        });
+    }
+
+     // Handle form submission for saving changes
+    //  $('#renewFeForm').on('submit', function(e) {
+    //     e.preventDefault();
+
+    //     $.ajax({
+    //         url: "",// renew fe data
+    //         type: "POST",
+    //         data: $(this).serialize(),
+    //         success: function(response) {
+    //             // Close the modal
+    //             $('#renewFeModal').modal('hide');
+
+    //             // Refresh DataTable
+    //             $('#myTable').DataTable().ajax.reload(null, false);
+
+    //             alert("Fire extinguisher renewed successfully!");
+    //         },
+    //         error: function(xhr) {
+    //             alert("Error renewing fire extinguisher!");
+    //         }
+    //     });
+    // });
+
+
+
     // Function to delete fire extinguisher
     function deleteFe(feId) {
         if (confirm("Are you sure you want to delete this fire extinguisher?")) {

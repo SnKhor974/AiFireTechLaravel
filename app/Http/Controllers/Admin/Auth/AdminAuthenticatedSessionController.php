@@ -88,11 +88,17 @@ class AdminAuthenticatedSessionController extends Controller
         
         //find the user details by id
         $user_details = Users::find($data['id']);
+
+        // Find the staff id in charge of user
+        $staff_id = $user_details->staff_id_in_charge;
     
-        //find the staff id in charge of user
-        $staff_id = Staff::where('id', $user_details->staff_id_in_charge)->first()->id;
-        //find the staff name in charge of user
-        $staff_name = Staff::find($staff_id)->username; 
+        if ($staff_id == 0) {
+            // If the staff_id is 0, set the staff_name to 'admin'
+            $staff_name = 'Admin';
+        } else {
+            // Find the staff name in charge of user
+            $staff_name = Staff::find($staff_id)->username;
+        }
         //find the fe list of user 
         $fe_list = FE::where('fe_user_id', $data['id'])->get();
 
